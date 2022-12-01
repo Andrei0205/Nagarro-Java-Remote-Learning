@@ -2,16 +2,14 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0"
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <parent>
+        <artifactId>RemoteLearning</artifactId>
+        <groupId>com.nagarro.remotelearning</groupId>
+        <version>1.0-SNAPSHOT</version>
+    </parent>
     <modelVersion>4.0.0</modelVersion>
 
-    <groupId>com.nagarro.remotelearning</groupId>
-    <artifactId>RemoteLearning</artifactId>
-    <packaging>pom</packaging>
-    <version>1.0-SNAPSHOT</version>
-    <modules>
-        <module>Week1_p1</module>
-        <module>Week1_p2</module>
-    </modules>
+    <artifactId>Week1_p2</artifactId>
 
     <properties>
         <maven.compiler.source>8</maven.compiler.source>
