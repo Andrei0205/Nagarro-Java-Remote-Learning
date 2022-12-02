@@ -32,7 +32,7 @@ public class Main {
         } catch (IOException e) {
             e.printStackTrace();
         }
-        for(Person p : persons){
+        for (Person p : persons) {
             System.out.println(p.toString());
         }
 
