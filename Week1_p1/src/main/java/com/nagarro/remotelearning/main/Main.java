@@ -1,7 +1,8 @@
 package com.nagarro.remotelearning.main;
 
 import com.nagarro.remotelearning.model.Person;
-import com.nagarro.remotelearning.tools.ReadFromFile;
+import com.nagarro.remotelearning.utils.PersonCreator;
+import com.nagarro.remotelearning.utils.ReadFromFile;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -19,21 +20,22 @@ public class Main {
 
         InputStream is = readFromFile.getFileFromResourceAsStream(fileName);
 
-        try (InputStreamReader streamReader =
-                     new InputStreamReader(is, StandardCharsets.UTF_8);
+        try (InputStreamReader streamReader = new InputStreamReader(is, StandardCharsets.UTF_8);
              BufferedReader reader = new BufferedReader(streamReader)) {
 
             String line;
             while ((line = reader.readLine()) != null) {
-                Person newPerson = new Person(line);
-                persons.add(newPerson);
+                Person newPerson = PersonCreator.createPerson(line);
+                if(!newPerson.equals(persons)) {
+                    persons.add(newPerson);
+                }
             }
 
         } catch (IOException e) {
             e.printStackTrace();
         }
         for (Person p : persons) {
-            System.out.println(p.toString());
+            System.out.println(p);
         }
 
     }

@@ -4,19 +4,21 @@ public class Person {
     private String firstName;
     private String lastName;
     private String dob;
-    private String dod = null;
+    private String dod;
 
-    public Person(String line) {
-        String[] split = line.split(",");
-        firstName = split[0];
-        lastName = split[1];
-        dob = split[2];
-        if (split.length < 4) {
-            dod = "Still alive";
-        } else {
-            dod = split[3];
-        }
+    public Person(String firstName, String lastName, String dob, String dod) {
+        this.firstName = firstName;
+        this.lastName = lastName;
+        this.dob = dob;
+        this.dod = dod;
+    }
 
+    public Person(String firstName, String lastName, String dob) {
+//        new Person(firstName,lastName,dob,null);   -- Returns Person{null, null, null,null} - why ?
+        this.firstName = firstName;
+        this.lastName = lastName;
+        this.dob = dob;
+        this.dod = null;
     }
 
     @Override

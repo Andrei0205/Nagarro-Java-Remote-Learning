@@ -1,6 +1,7 @@
-package com.nagarro.remotelearning.tools;
+package com.nagarro.remotelearning.utils;
 
-import java.io.*;
+
+import java.io.InputStream;
 
 public class ReadFromFile {
 
