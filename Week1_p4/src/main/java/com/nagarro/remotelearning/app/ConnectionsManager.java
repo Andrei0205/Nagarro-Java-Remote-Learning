@@ -5,15 +5,14 @@ import java.util.List;
 
 public class ConnectionsManager extends Connection {
     private static final int NUMBER_OF_CONNECTIONS = 20;
-    List<Connection> connections = Arrays.asList(new Connection[NUMBER_OF_CONNECTIONS]);
+    private List<Connection> connections = Arrays.asList(new Connection[NUMBER_OF_CONNECTIONS]);
 
 
     public Connection getConnection(int connectionNumber) {
-        if(connectionNumber >= NUMBER_OF_CONNECTIONS) {
+        if (connectionNumber >= NUMBER_OF_CONNECTIONS) {
             return null;
-        }
-        else{
-            if(connections.get(connectionNumber) == null) {
+        } else {
+            if (connections.get(connectionNumber) == null) {
                 return new Connection();
             }
             return connections.get(connectionNumber);
