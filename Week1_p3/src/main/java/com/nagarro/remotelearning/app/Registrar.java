@@ -3,14 +3,14 @@ package com.nagarro.remotelearning.app;
 import com.nagarro.remotelearning.model.Domain;
 
 public class Registrar {
-    private Registry innerRegistry;
+    private Registry registry;
 
-    public Registrar() {
-        innerRegistry = new Registry();
+    public Registrar(Registry registry) {
+        this.registry = registry;
     }
 
     public Domain talkToTheRegistryToCreateDomain(String domainName, String ownerDetails, String hosts) {
         System.out.println("Registrar talk to the registry for create domain");
-        return innerRegistry.createDomain(domainName, ownerDetails, hosts);
+        return registry.createDomain(domainName, ownerDetails, hosts);
     }
 }

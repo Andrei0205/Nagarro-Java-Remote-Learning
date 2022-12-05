@@ -1,11 +1,18 @@
 package com.nagarro.remotelearning.main;
 
 import com.nagarro.remotelearning.app.Customer;
+import com.nagarro.remotelearning.app.Registrar;
+import com.nagarro.remotelearning.app.Registry;
+import com.nagarro.remotelearning.app.Reseller;
 
 public class Main {
-    static Customer customer1 = new Customer("Preferential Domain", "Rich", "1,2,3");
+
 
     public static void main(String[] args) {
-        customer1.buyDomain();
+        Registry registry = new Registry();
+        Registrar registrar = new Registrar(registry);
+        Reseller reseller = new Reseller(registrar);
+        Customer customer = new Customer(reseller);
+        customer.buyDomain("myDomain","rich","host.ro");
     }
 }

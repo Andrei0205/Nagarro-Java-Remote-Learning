@@ -3,25 +3,19 @@ package com.nagarro.remotelearning.app;
 import com.nagarro.remotelearning.model.Domain;
 
 public class Customer {
-    private String domainName;
-    private String ownerDetails;
-    private String hosts;
 
     private Domain domain = null;
 
-    private Reseller innerReseller;
+    private Reseller reseller;
 
-    public Customer(String domainName, String ownerDetails, String hosts) {
-        this.domainName = domainName;
-        this.ownerDetails = ownerDetails;
-        this.hosts = hosts;
-        innerReseller = new Reseller();
+    public Customer(Reseller reseller) {
+        this.reseller = reseller;
 
     }
 
-    public void buyDomain() {
+    public void buyDomain(String domainName, String ownerDetails, String hosts) {
         System.out.println("Customer call reseller for buying domain");
-        domain = innerReseller.contactRegistrarToBuyDomain(domainName, ownerDetails, hosts);
+        domain = reseller.contactRegistrarToBuyDomain(domainName, ownerDetails, hosts);
         System.out.println(domain);
     }
 }
