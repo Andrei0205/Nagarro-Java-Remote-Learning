@@ -1,4 +1,4 @@
-package com.nagarro.remotelearning.tools;
+package com.nagarro.remotelearning.utils;
 
 public class PrimeNumbersPrinter {
     Validator primeChecker = new PrimeValidator();

@@ -1,6 +1,6 @@
 package com.nagarro.remotelearning.main;
 
-import com.nagarro.remotelearning.tools.PrimeNumbersPrinter;
+import com.nagarro.remotelearning.utils.PrimeNumbersPrinter;
 
 
 public class Main {
