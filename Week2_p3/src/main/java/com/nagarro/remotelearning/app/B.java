@@ -1,8 +1,8 @@
 package com.nagarro.remotelearning.app;
 
 public class B extends C {
-    static int i;
-    String b;
+    private static int i;
+    private String b;
 
     static {
         i = 4;

@@ -1,8 +1,8 @@
 package com.nagarro.remotelearning.app;
 
 public class C {
-    static int i;
-    String c;
+    private static int i;
+    private String c;
 
     static {
         i = 2;

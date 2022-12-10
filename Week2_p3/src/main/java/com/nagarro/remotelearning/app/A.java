@@ -1,9 +1,9 @@
 package com.nagarro.remotelearning.app;
 
 public class A {
-    B classB = new B();
-    static int i;
-    String a;
+    private B classB = new B();
+    private static int i;
+    private String a;
 
     static {
         i = 3;
