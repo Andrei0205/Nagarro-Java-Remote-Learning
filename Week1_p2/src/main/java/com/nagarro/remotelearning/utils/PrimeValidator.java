@@ -1,16 +1,18 @@
 package com.nagarro.remotelearning.utils;
 
-public class PrimeValidator implements Validator{
+public class PrimeValidator implements Validator {
 
     @Override
-    public void validate(int number) {
-        if (number <= 1)
-            return;
+    public boolean validate(int number) {
+        if (number <= 1) {
+            return false;
+        }
 
-        for (int i = 2; i < number; i++)
-            if (number % i == 0)
-                return;
-
-        System.out.print("-PRIME");
+        for (int i = 2; i < number; i++) {
+            if (number % i == 0) {
+                return false;
+            }
+        }
+        return true;
     }
 }

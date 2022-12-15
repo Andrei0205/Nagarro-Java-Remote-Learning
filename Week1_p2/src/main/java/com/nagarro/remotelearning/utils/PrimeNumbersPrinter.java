@@ -6,7 +6,9 @@ public class PrimeNumbersPrinter {
     public void print(int lastNumber) {
         for (int i = 1; i <= lastNumber; i++) {
             System.out.print(i);
-            primeChecker.validate(i);
+            if (primeChecker.validate(i)) {
+                System.out.print("-PRIME");
+            }
             System.out.println();
         }
     }

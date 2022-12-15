@@ -1,5 +1,5 @@
 package com.nagarro.remotelearning.utils;
 
 public interface Validator {
-    void validate(int number);
+    boolean validate(int number);
 }
