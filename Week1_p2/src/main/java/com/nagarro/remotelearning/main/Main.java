@@ -4,9 +4,8 @@ import com.nagarro.remotelearning.utils.PrimeNumbersPrinter;
 
 
 public class Main {
-    static PrimeNumbersPrinter printer = new PrimeNumbersPrinter();
-
     public static void main(String[] args) {
+        PrimeNumbersPrinter printer = new PrimeNumbersPrinter();
         System.out.println("Enter an integer");
         printer.print(Integer.parseInt(args[0]));
     }
