@@ -16,17 +16,27 @@ public class Main {
 
         ReadFromFile readFromFile = new ReadFromFile();
         String fileName = "W1P1input.txt";
-        Set<Person> persons = new HashSet<>();
+        List<Person> persons = new ArrayList<>();
+        boolean validator;
+
 
         InputStream is = readFromFile.getFileFromResourceAsStream(fileName);
 
-        try (InputStreamReader streamReader = new InputStreamReader(is, StandardCharsets.UTF_8);
-             BufferedReader reader = new BufferedReader(streamReader)) {
+        try (InputStreamReader streamReader = new InputStreamReader(is, StandardCharsets.UTF_8); BufferedReader reader = new BufferedReader(streamReader)) {
 
             String line;
             while ((line = reader.readLine()) != null) {
                 Person newPerson = PersonCreator.createPerson(line);
-                if(!newPerson.equals(persons)) {
+                validator = true;
+                if (persons.isEmpty()) {
+                    persons.add(newPerson);
+                }
+                for (int i = 0; i < persons.size(); i++) {
+                    if (newPerson.equals(persons.get(i))) {
+                        validator = false;
+                    }
+                }
+                if (validator) {
                     persons.add(newPerson);
                 }
             }

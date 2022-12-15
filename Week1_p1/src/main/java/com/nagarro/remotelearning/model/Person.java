@@ -22,6 +22,20 @@ public class Person {
     }
 
     @Override
+    public boolean equals(Object o) {
+        if (o == null) {
+            return false;
+        }
+        Person person = (Person) o;
+        if (this.firstName.equals(person.firstName) && this.lastName.equals(person.lastName)) {
+            return true;
+        } else {
+            return false;
+        }
+
+    }
+
+    @Override
     public String toString() {
         return firstName + " " + lastName + " " + dob + " " + dod;
 
