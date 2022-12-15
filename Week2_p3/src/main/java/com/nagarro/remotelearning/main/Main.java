@@ -1,9 +1,9 @@
 package com.nagarro.remotelearning.main;
 
-import com.nagarro.remotelearning.app.A;
+import com.nagarro.remotelearning.app.Base;
 
 public class Main {
     public static void main(String[] args) {
-        A a = new A();
+        Base base = new Base();
     }
 }
