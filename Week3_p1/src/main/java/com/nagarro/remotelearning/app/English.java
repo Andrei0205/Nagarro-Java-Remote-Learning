@@ -6,7 +6,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-public class Romanian extends Person {
+public class English extends Person {
     private static final int CURRENT_YEAR = 2022;
     private static final int SURNAME_INDEX = 0;
     private static final int BIRTH_DAY_INDEX = 0;
@@ -23,13 +23,13 @@ public class Romanian extends Person {
     private int birthYear;
 
 
-    public Romanian(String surname, String firstname, String birthDate) {
+    public English(String surname, String firstname, String birthDate) {
         this.surname = surname;
         assignFirstNames(splitName(firstname));
         this.birthDate = birthDate;
     }
 
-    public Romanian(String fullname, String birthDate) {
+    public English(String fullname, String birthDate) {
         List<String> splittedNames = splitName(fullname);
         this.surname = splittedNames.get(SURNAME_INDEX);
         startIndex += 1;
@@ -46,7 +46,7 @@ public class Romanian extends Person {
     public void selfDescribe() {
         extractBirthDateIntoFields(birthDate);
         String age = calculateAge();
-        System.out.println("Buna,sunt din romania si imi place sa calatoresc. Varsta mea este: " + age);
+        System.out.println("Hello,I'm from England and I like to read. I am " + age + "years old");
     }
 
     private void extractBirthDateIntoFields(String birthDate) {
