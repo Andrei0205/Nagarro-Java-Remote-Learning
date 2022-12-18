@@ -6,17 +6,26 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class Canvas {
+    private String canvasName;
     private List<Shape> shapes = new ArrayList<>();
 
-    public void addShape (Shape shape) {
+    public Canvas(String name) {
+        this.canvasName = name;
+    }
+
+    public void addShape(Shape shape) {
         shapes.add(shape);
     }
+
     public void removeShape(int index) {
         shapes.remove(index);
     }
+
     public void drawAllShapes() {
-        for(Shape s : shapes) {
-        s.draw();
+        System.out.println("Canvas: " + canvasName + " {");
+        for (Shape s : shapes) {
+            s.draw();
         }
+        System.out.println("Canvas: " + canvasName + "ends }");
     }
 }
