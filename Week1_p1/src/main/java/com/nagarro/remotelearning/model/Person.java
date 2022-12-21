@@ -23,6 +23,9 @@ public class Person {
 
     @Override
     public boolean equals(Object o) {
+        if(o == this) {
+            return true;
+        }
         if (o == null) {
             return false;
         }
@@ -33,6 +36,15 @@ public class Person {
             return false;
         }
 
+    }
+    @Override
+    public int hashCode() {
+        int hash = 7;
+        hash = 31 * hash + (dob == null ? 0 : dob.hashCode());
+        hash = 31 * hash + (dod == null ? 0 : dod.hashCode());
+        hash = 31 * hash + (firstName == null ? 0 : firstName.hashCode());
+        hash = 31 * hash + (lastName == null ? 0 : lastName.hashCode());
+        return hash;
     }
 
     @Override
