@@ -4,14 +4,14 @@ import com.nagarro.remotelearning.app.*;
 
 public class Main {
     public static void main(String[] args) {
-        Point A = new Point(2.0);
-        Point B = new Point(3.4);
-        Point C = new Point(8.3);
-        Point D = new Point(10.1);
-        Point E = new Point(7.0);
-        Point F = new Point(12.4);
-        Point G = new Point(18.3);
-        Point H = new Point(22.1);
+        Point A = new Point(2.0, 1.0);
+        Point B = new Point(3.4, 2.0);
+        Point C = new Point(8.3, 5.4);
+        Point D = new Point(10.1, 10);
+        Point E = new Point(7.0, -2.3);
+        Point F = new Point(12.4, -4.5);
+        Point G = new Point(18.3, 14);
+        Point H = new Point(22.1, 9.3);
         Line AB = new Line(A, B);
         Line FG = new Line(F, G);
         Rectangle rectangle1 = new Rectangle(A, B, C, D);
@@ -31,10 +31,9 @@ public class Main {
         canvas30x40.addShape(rectangle2);
         canvas30x40.addShape(circle2);
 
-        CanvasHolder canvasHolder = new CanvasHolder();
-        canvasHolder.addCanvas(canvas20x20);
-        canvasHolder.addCanvas(canvas30x40);
-        canvasHolder.drawAllCanvas();
+        canvas20x20.addShape(canvas30x40);
+
+        canvas20x20.draw();
 
     }
 }

@@ -1,19 +1,20 @@
 package com.nagarro.remotelearning.app;
 
-import com.nagarro.remotelearning.model.Shape;
+import com.nagarro.remotelearning.model.Drawable;
+
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class Canvas {
+public class Canvas implements Drawable {
     private String canvasName;
-    private List<Shape> shapes = new ArrayList<>();
+    private List<Drawable> shapes = new ArrayList<>();
 
     public Canvas(String name) {
         this.canvasName = name;
     }
 
-    public void addShape(Shape shape) {
+    public void addShape(Drawable shape) {
         shapes.add(shape);
     }
 
@@ -21,11 +22,13 @@ public class Canvas {
         shapes.remove(index);
     }
 
-    public void drawAllShapes() {
+    @Override
+    public void draw() {
         System.out.println("Canvas: " + canvasName + " {");
-        for (Shape s : shapes) {
+        for (Drawable s : shapes) {
             s.draw();
         }
         System.out.println("Canvas: " + canvasName + "ends }");
     }
+
 }

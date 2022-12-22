@@ -1,8 +1,9 @@
 package com.nagarro.remotelearning.app;
 
-import com.nagarro.remotelearning.model.Shape;
+import com.nagarro.remotelearning.model.Drawable;
 
-public class Rectangle implements Shape {
+
+public class Rectangle implements Drawable {
     private Point A;
     private Point B;
     private Point C;
@@ -35,11 +36,6 @@ public class Rectangle implements Shape {
         CD.draw();
         DA.draw();
         System.out.println("Rectangle ends");
-
-    }
-
-    @Override
-    public void erase() {
 
     }
 

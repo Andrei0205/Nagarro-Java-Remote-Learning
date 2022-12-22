@@ -1,7 +1,6 @@
 package com.nagarro.remotelearning.model;
 
-public interface Shape {
+public interface Drawable {
     void draw();
 
-    void erase();
 }

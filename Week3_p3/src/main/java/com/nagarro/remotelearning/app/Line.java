@@ -1,8 +1,8 @@
 package com.nagarro.remotelearning.app;
 
-import com.nagarro.remotelearning.model.Shape;
+import com.nagarro.remotelearning.model.Drawable;
 
-public class Line implements Shape {
+public class Line implements Drawable {
 
     private Point startCoordinate;
     private Point endCoordinate;
@@ -17,8 +17,4 @@ public class Line implements Shape {
         System.out.println("Line from: " + startCoordinate.toString() + " to " + endCoordinate.toString());
     }
 
-    @Override
-    public void erase() {
-
-    }
 }

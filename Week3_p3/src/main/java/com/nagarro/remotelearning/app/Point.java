@@ -1,26 +1,23 @@
 package com.nagarro.remotelearning.app;
 
-import com.nagarro.remotelearning.model.Shape;
+import com.nagarro.remotelearning.model.Drawable;
 
-public class Point implements Shape {
-    private double coordinate;
+public class Point implements Drawable {
+    private double coordinateX;
+    private double coordinateY;
 
-    public Point(double coordinate) {
-        this.coordinate = coordinate;
+    public Point(double coordinateX, double coordinateY) {
+        this.coordinateX = coordinateX;
+        this.coordinateY = coordinateY;
     }
 
     @Override
     public void draw() {
-        System.out.println("Point: " + coordinate);
-    }
-
-    @Override
-    public void erase() {
-
+        System.out.println("Point: " + "X: " + coordinateX + " Y: " + coordinateY);
     }
 
     @Override
     public String toString() {
-        return  "" + coordinate;
+        return "" + "X: " + coordinateX + " Y: " + coordinateY;
     }
 }

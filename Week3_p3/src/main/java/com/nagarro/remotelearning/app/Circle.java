@@ -1,8 +1,8 @@
 package com.nagarro.remotelearning.app;
 
-import com.nagarro.remotelearning.model.Shape;
+import com.nagarro.remotelearning.model.Drawable;
 
-public class Circle implements Shape {
+public class Circle implements Drawable {
     private Point centerPoint;
     private Point pointOfTheCircle;
     private Line radius;
@@ -10,7 +10,7 @@ public class Circle implements Shape {
     public Circle(Point centerPoint, Point pointOfTheCircle) {
         this.centerPoint = centerPoint;
         this.pointOfTheCircle = pointOfTheCircle;
-        createRadius(centerPoint,pointOfTheCircle);
+        createRadius(centerPoint, pointOfTheCircle);
     }
 
     @Override
@@ -23,12 +23,7 @@ public class Circle implements Shape {
         System.out.println("Circle ends");
     }
 
-    @Override
-    public void erase() {
-
-    }
-
-    private void createRadius(Point centerPoint, Point pointOfTheCircle){
-        radius = new Line(centerPoint,pointOfTheCircle);
+    private void createRadius(Point centerPoint, Point pointOfTheCircle) {
+        radius = new Line(centerPoint, pointOfTheCircle);
     }
 }
