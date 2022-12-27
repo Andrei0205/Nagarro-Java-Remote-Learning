@@ -6,10 +6,12 @@ import java.util.List;
 import java.util.Random;
 
 public class SentenceCreator {
-    private final List<String> articles = new ArrayList<>(Arrays.asList("the", "a", "one", "some", "any"));
-    private final List<String> nouns = new ArrayList<>(Arrays.asList("boy", "girl", "dog", "town", "car"));
-    private final List<String> verbs = new ArrayList<>(Arrays.asList("drove", "jumped", "ran", "walked", "skipped"));
-    private final List<String> prepositions = new ArrayList<>(Arrays.asList("to", "from", "over", "under", "on"));
+    private static final List<String> articles = new ArrayList<>(Arrays.asList("the", "a", "one", "some", "any"));
+    private static final List<String> nouns = new ArrayList<>(Arrays.asList("boy", "girl", "dog", "town", "car"));
+    private static final List<String> verbs = new ArrayList<>(Arrays.asList("drove", "jumped", "ran", "walked", "skipped"));
+    private static final List<String> prepositions = new ArrayList<>(Arrays.asList("to", "from", "over", "under", "on"));
+    private static final String BLANK_SPACE = " ";
+    private static final String PERIOD = ".";
     private Random random = new Random();
 
     public List<String> createSentences(int numberOfSentences) {
@@ -23,12 +25,12 @@ public class SentenceCreator {
     private String createOneSentence() {
         StringBuilder sentence = new StringBuilder();
         sentence.append(capitalizeFirstLetter(getOneArticle()));
-        sentence.append(getOneNoun()).append(" ");
-        sentence.append(getOneVerb()).append(" ");
-        sentence.append(getOnePreposition()).append(" ");
-        sentence.append(getOneArticle()).append(" ");
+        sentence.append(getOneNoun()).append(BLANK_SPACE);
+        sentence.append(getOneVerb()).append(BLANK_SPACE);
+        sentence.append(getOnePreposition()).append(BLANK_SPACE);
+        sentence.append(getOneArticle()).append(BLANK_SPACE);
         sentence.append(getOneNoun());
-        sentence.append(".");
+        sentence.append(PERIOD);
         return sentence.toString();
     }
 
