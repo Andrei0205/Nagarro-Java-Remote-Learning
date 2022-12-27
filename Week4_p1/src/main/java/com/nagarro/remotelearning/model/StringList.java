@@ -16,7 +16,6 @@ public class StringList implements IList {
             checkIfCanBeAdded(elementToAdd);
         } catch (CustomListException e) {
             e.printStackTrace(System.out);
-           // System.out.println(e.getMessage());
         }
         stringList.add(elementToAdd);
     }
@@ -58,7 +57,7 @@ public class StringList implements IList {
 
     private void checkIfCanBeAdded(String element) throws CustomListException {
         if (element == null) {
-            throw new CustomListException("Null");
+            throw new CustomListException("The added value is null");
         }
         if (element == "") {
             throw new CustomListException("The added value is empty");

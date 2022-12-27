@@ -37,12 +37,6 @@ public class MyListTest {
         }
     }
 
-    private void initData() {
-        for (String numberAsString : initData) {
-            list.add(numberAsString);
-        }
-    }
-
     @Test
     public void testAddNonIntegerValue() {
         exception.expect(exceptionType);
@@ -63,5 +57,11 @@ public class MyListTest {
         exception.expect(exceptionType);
         exception.expectMessage("Index out of bounds.");
         list.get(initData.length);
+    }
+
+    private void initData() {
+        for (String numberAsString : initData) {
+            list.add(numberAsString);
+        }
     }
 }
