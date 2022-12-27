@@ -36,7 +36,7 @@ public class SentenceCreator {
 
     private String capitalizeFirstLetter(String string) {
         StringBuilder stringBuilder = new StringBuilder();
-        stringBuilder.append(Character.toUpperCase(string.charAt(0))).append(string.substring(1)).append(" ");
+        stringBuilder.append(Character.toUpperCase(string.charAt(0))).append(string.substring(1)).append(BLANK_SPACE);
         return stringBuilder.toString();
     }
 
