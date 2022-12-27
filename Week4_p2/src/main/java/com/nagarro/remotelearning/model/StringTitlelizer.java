@@ -6,7 +6,7 @@ import java.util.List;
 
 public class StringTitlelizer implements Titlelizer {
 
-    private final List<String> ignoredWords = new ArrayList<>(Arrays.asList("the", "this", "a", "to", "in", "of", "is"));
+    private static final List<String> IGNORED_WORDS = new ArrayList<>(Arrays.asList("the", "this", "a", "to", "in", "of", "is"));
 
     @Override
     public String titlelize(String toTitlelize) {
