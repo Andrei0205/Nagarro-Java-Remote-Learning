@@ -8,30 +8,36 @@ import java.util.ArrayList;
 public class StringList implements IList {
 
     private List<String> stringList = new ArrayList<>();
+    private List<String> recordOfOperations = new ArrayList<>();
 
     @Override
     public void add(Object element) {
+        addRecord("add()");
         String elementToAdd = (String) element;
+        if (elementToAdd == null) {
+            throw new CustomListException("Null");
+        }
         try {
-            checkIfCanBeAdded(elementToAdd);
-        } catch (CustomListException e) {
-            e.printStackTrace(System.out);
+            Integer.parseInt(elementToAdd);
+        } catch (NumberFormatException e) {
+            throw new CustomListException("Invalid number.");
         }
         stringList.add(elementToAdd);
     }
 
     @Override
     public Object get(int positon) {
+        addRecord("get()");
         try {
-            checkPosition(positon);
-        } catch (CustomListException e) {
-            e.printStackTrace(System.out);
+            return stringList.get(positon);
+        } catch (IndexOutOfBoundsException e) {
+            throw new CustomListException("Index out of bounds.");
         }
-        return stringList.get(positon);
     }
 
     @Override
     public boolean contains(Object element) {
+        addRecord("contains()");
         for (String s : stringList) {
             if (element.equals(s)) {
                 return true;
@@ -42,6 +48,7 @@ public class StringList implements IList {
 
     @Override
     public boolean containsAll(IList foreignList) {
+        addRecord("containsAll()");
         for (String s : stringList) {
             if (!foreignList.contains(s)) {
                 return false;
@@ -52,27 +59,18 @@ public class StringList implements IList {
 
     @Override
     public int size() {
+        addRecord("size()");
         return stringList.size();
     }
 
-    private void checkIfCanBeAdded(String element) throws CustomListException {
-        if (element == null) {
-            throw new CustomListException("The added value is null");
-        }
-        if (element == "") {
-            throw new CustomListException("The added value is empty");
-        }
-        try {
-            Integer.parseInt(element);
-        } catch (NumberFormatException e) {
-            throw new CustomListException("Invalid number.");
-        }
+    public List<String> getRecords() {
+        return recordOfOperations;
     }
 
-    private void checkPosition(int position) throws CustomListException {
-        if (position >= size()) {
-            throw new CustomListException("Index out of bounds.");
-        }
+    private void addRecord(String s) {
+        StringBuilder stringBuilder = new StringBuilder();
+        stringBuilder.append("called ").append(s);
+        recordOfOperations.add(stringBuilder.toString());
     }
 
 }

@@ -1,12 +1,10 @@
 
-import static java.util.Arrays.asList;
 import static junit.framework.Assert.assertTrue;
 import static org.junit.Assert.assertEquals;
 
 import com.nagarro.remotelearning.app.CustomListException;
 import com.nagarro.remotelearning.model.IList;
 import com.nagarro.remotelearning.model.StringList;
-import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;

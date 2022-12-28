@@ -1,7 +1,8 @@
 package com.nagarro.remotelearning.app;
 
-public class CustomListException extends Exception {
+public class CustomListException extends RuntimeException {
     private String msg;
+
     public CustomListException() {
     }
 
