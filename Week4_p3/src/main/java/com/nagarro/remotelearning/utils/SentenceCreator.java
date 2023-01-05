@@ -6,10 +6,10 @@ import java.util.List;
 import java.util.Random;
 
 public class SentenceCreator {
-    private static final List<String> articles = new ArrayList<>(Arrays.asList("the", "a", "one", "some", "any"));
-    private static final List<String> nouns = new ArrayList<>(Arrays.asList("boy", "girl", "dog", "town", "car"));
-    private static final List<String> verbs = new ArrayList<>(Arrays.asList("drove", "jumped", "ran", "walked", "skipped"));
-    private static final List<String> prepositions = new ArrayList<>(Arrays.asList("to", "from", "over", "under", "on"));
+    private static final List<String> ARTICLES = new ArrayList<>(Arrays.asList("the", "a", "one", "some", "any"));
+    private static final List<String> NOUNS = new ArrayList<>(Arrays.asList("boy", "girl", "dog", "town", "car"));
+    private static final List<String> VERBS = new ArrayList<>(Arrays.asList("drove", "jumped", "ran", "walked", "skipped"));
+    private static final List<String> PREPOSITIONS = new ArrayList<>(Arrays.asList("to", "from", "over", "under", "on"));
     private static final String BLANK_SPACE = " ";
     private static final String PERIOD = ".";
     private Random random = new Random();
@@ -41,19 +41,19 @@ public class SentenceCreator {
     }
 
     private String getOnePreposition() {
-        return prepositions.get(random.nextInt(5));
+        return PREPOSITIONS.get(random.nextInt(5));
     }
 
     private String getOneVerb() {
-        return verbs.get(random.nextInt(5));
+        return VERBS.get(random.nextInt(5));
     }
 
     private String getOneNoun() {
-        return nouns.get(random.nextInt(5));
+        return NOUNS.get(random.nextInt(5));
     }
 
     private String getOneArticle() {
-        return articles.get(random.nextInt(5));
+        return ARTICLES.get(random.nextInt(5));
     }
 }
 

@@ -10,7 +10,7 @@ public class Main {
         SentenceCreator sentenceCreator = new SentenceCreator();
         List<String> sentences = sentenceCreator.createSentences(20);
         StoryCreator storyCreator = new StoryCreator();
-        String story = storyCreator.createStory(sentences);
+        String story = storyCreator.createStory(5);
         System.out.println(story);
     }
 }
