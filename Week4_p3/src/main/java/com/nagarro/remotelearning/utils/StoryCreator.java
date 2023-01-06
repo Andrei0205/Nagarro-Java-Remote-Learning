@@ -8,8 +8,7 @@ public class StoryCreator {
     private SentenceCreator sentenceCreator = new SentenceCreator();
 
     public String createStory(int numberOfSentences) {
-        List<String> sentences;
-        sentences = sentenceCreator.createSentences(numberOfSentences);
+        List<String> sentences = sentenceCreator.createSentences(numberOfSentences);
         StringBuilder story = new StringBuilder();
         for (int i = 0; i < numberOfSentences; i++) {
             int nextRandom = random.nextInt(sentences.size());
