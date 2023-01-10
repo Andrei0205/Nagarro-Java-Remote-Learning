@@ -1,6 +1,5 @@
 package com.nagarro.remotelearning.model;
 
-import com.nagarro.remotelearning.app.CustomListException;
 
 public interface IList<T> {
 
