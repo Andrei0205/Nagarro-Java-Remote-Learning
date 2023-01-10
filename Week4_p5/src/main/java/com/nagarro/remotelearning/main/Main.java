@@ -1,6 +1,6 @@
 package com.nagarro.remotelearning.main;
-import com.nagarro.remotelearning.app.DispatchOperator;
-import com.nagarro.remotelearning.app.TaxiDriver;
+import com.nagarro.remotelearning.model.DispatchOperator;
+import com.nagarro.remotelearning.model.TaxiDriver;
 
 import java.util.ArrayList;
 import java.util.List;
