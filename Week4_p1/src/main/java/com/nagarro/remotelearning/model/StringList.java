@@ -75,8 +75,8 @@ public class StringList implements IList<String> {
     private void resize() {
 
         if (index == arraySize) {
-            Integer[] newArray = new Integer[2 * arraySize];
             arraySize *= 2;
+            Integer[] newArray = new Integer[arraySize];
             System.arraycopy(values, 0, newArray, 0, values.length);
             values = newArray;
         } else {
