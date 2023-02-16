@@ -32,18 +32,13 @@ public class StringTitlelizer implements Titlelizer {
                 newString.append(splittedString[i]).append(BLANK_SPACE);
             }
         }
-        newString = newString.deleteCharAt(newString.length() - 1);
+        newString.deleteCharAt(newString.length() - 1);
         return newString.toString();
     }
 
 
     private boolean isNotIgnoredWord(String word) {
-        for (String s : IGNORED_WORDS) {
-            if (word.equals(s)) {
-                return false;
-            }
-        }
-        return true;
+        return !IGNORED_WORDS.contains(word);
     }
 
 }

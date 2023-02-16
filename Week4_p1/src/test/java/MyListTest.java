@@ -2,7 +2,7 @@
 import static junit.framework.Assert.assertTrue;
 import static org.junit.Assert.assertEquals;
 
-import com.nagarro.remotelearning.app.CustomListException;
+import com.nagarro.remotelearning.exception.CustomListException;
 import com.nagarro.remotelearning.model.IList;
 import com.nagarro.remotelearning.model.StringList;
 import org.junit.Before;

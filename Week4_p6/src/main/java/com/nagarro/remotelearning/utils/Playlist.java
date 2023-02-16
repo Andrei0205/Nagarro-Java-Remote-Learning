@@ -1,6 +1,5 @@
-package com.nagarro.remotelearning.app;
+package com.nagarro.remotelearning.utils;
 
-import java.util.ArrayList;
 import java.util.List;
 
 public class Playlist {

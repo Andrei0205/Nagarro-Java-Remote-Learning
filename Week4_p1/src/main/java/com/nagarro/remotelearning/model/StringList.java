@@ -1,45 +1,50 @@
 package com.nagarro.remotelearning.model;
 
-import com.nagarro.remotelearning.app.CustomListException;
+import com.nagarro.remotelearning.exception.CustomListException;
 
 import java.util.List;
 import java.util.ArrayList;
 
-public class StringList implements IList {
+public class StringList implements IList<String> {
 
-    private List<String> stringList = new ArrayList<>();
+    private int arraySize = 20;
+    private Integer[] values = new Integer[arraySize];
+    private int index = 0;
     private List<String> recordOfOperations = new ArrayList<>();
 
     @Override
-    public void add(Object element) {
+    public void add(String element) {
         addRecord("add()");
-        String elementToAdd = (String) element;
-        if (elementToAdd == null) {
+        if (element == null) {
             throw new CustomListException("Null");
         }
         try {
-            Integer.parseInt(elementToAdd);
+            Integer.parseInt(element);
         } catch (NumberFormatException e) {
             throw new CustomListException("Invalid number.");
         }
-        stringList.add(elementToAdd);
+        if (index == arraySize) {
+            resize();
+        }
+        values[index] = Integer.parseInt(element);
+        index++;
+        resize();
     }
 
     @Override
-    public Object get(int positon) {
+    public String get(int positon) {
         addRecord("get()");
-        try {
-            return stringList.get(positon);
-        } catch (IndexOutOfBoundsException e) {
+        if (positon >= index) {
             throw new CustomListException("Index out of bounds.");
         }
+        return String.valueOf(values[positon]);
     }
 
     @Override
-    public boolean contains(Object element) {
+    public boolean contains(String element) {
         addRecord("contains()");
-        for (String s : stringList) {
-            if (element.equals(s)) {
+        for (Integer value : values) {
+            if (value == Integer.parseInt(element)) {
                 return true;
             }
         }
@@ -47,10 +52,10 @@ public class StringList implements IList {
     }
 
     @Override
-    public boolean containsAll(IList foreignList) {
+    public boolean containsAll(IList<String> foreignList) {
         addRecord("containsAll()");
-        for (String s : stringList) {
-            if (!foreignList.contains(s)) {
+        for (Integer value : values) {
+            if (!foreignList.contains(value.toString())) {
                 return false;
             }
         }
@@ -60,11 +65,26 @@ public class StringList implements IList {
     @Override
     public int size() {
         addRecord("size()");
-        return stringList.size();
+        return values.length;
     }
 
     public List<String> getRecords() {
         return recordOfOperations;
+    }
+
+    private void resize() {
+
+        if (index == arraySize) {
+            arraySize *= 2;
+            Integer[] newArray = new Integer[arraySize];
+            System.arraycopy(values, 0, newArray, 0, values.length);
+            values = newArray;
+        } else {
+            Integer[] newArray = new Integer[index];
+            arraySize = index;
+            System.arraycopy(values, 0, newArray, 0, index);
+            values = newArray;
+        }
     }
 
     private void addRecord(String s) {

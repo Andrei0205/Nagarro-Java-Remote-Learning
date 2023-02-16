@@ -1,4 +1,4 @@
-package com.nagarro.remotelearning.app;
+package com.nagarro.remotelearning.model;
 
 
 import com.nagarro.remotelearning.model.Driver;

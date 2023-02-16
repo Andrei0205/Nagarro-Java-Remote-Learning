@@ -11,8 +11,8 @@ public class PigLatinEncoder {
     public String encode(String string) {
         String[] splittedString = string.split(SPACE_SEPARATOR);
         StringBuilder stringBuilder = new StringBuilder();
-        for (String s : splittedString) {
-            stringBuilder.append(transformWordIntoPigLatin(s));
+        for (String word : splittedString) {
+            stringBuilder.append(transformWordIntoPigLatin(word));
             stringBuilder.append(BLANK_SPACE);
         }
         return stringBuilder.toString();
