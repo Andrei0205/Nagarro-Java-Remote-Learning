@@ -11,8 +11,11 @@ public class Main {
 
         Factory factory = new Factory();
        Object initial = factory.getClass("initial");
+       System.out.println(initial.getClass().getName());
+       MyClass myClass = new MyClass();
+       System.out.println(myClass.getClass().getName());
        Object reloaded = factory.getClass("reloaded");
-       MyClass subclass = (MyClass) factory.getClass("subclass");
+       //MyClass subclass = (MyClass) factory.getClass("subclass");
         //MyClass myClass = (MyClass) subclass;
 
     }
