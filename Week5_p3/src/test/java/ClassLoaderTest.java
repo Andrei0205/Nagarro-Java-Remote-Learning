@@ -1,3 +1,4 @@
+import com.nagarro.remotelearning.utils.Classes;
 import com.nagarro.remotelearning.utils.Factory;
 import com.nagarro.remotelearning.utils.MyClass;
 import org.junit.Before;
@@ -12,7 +13,8 @@ import static org.junit.Assert.assertEquals;
 
 public class ClassLoaderTest {
     MyClass expectedMyClass;
-    Object expectedReloadedClass;
+    MyClass expectedReloadedClass;
+    MyClass expectedSubclass;
     Factory factory;
 
 
@@ -28,20 +30,39 @@ public class ClassLoaderTest {
 
             ClassLoader classLoader = new URLClassLoader(urls);
 
-            expectedReloadedClass = classLoader.loadClass("org.example.utils.MyClass");
+            expectedReloadedClass = (MyClass) classLoader.loadClass("com.nagarro.remotelearning.utils.MyClass").newInstance();
         } catch (MalformedURLException | ClassNotFoundException e) {
             e.printStackTrace();
+        } catch (InstantiationException | IllegalAccessException e) {
+            throw new RuntimeException(e);
+        }
+        try {
+            File file = new File("D:\\DynamicClass\\target\\classes");
+
+            URL url = file.toURI().toURL();
+            URL[] urls = new URL[]{url};
+
+            ClassLoader classLoader = new URLClassLoader(urls);
+
+            expectedSubclass = (MyClass) classLoader.loadClass("com.nagarro.remotelearning.utils.SubClass").newInstance();
+        } catch (MalformedURLException | ClassNotFoundException | InstantiationException | IllegalAccessException e) {
+            throw new RuntimeException(e);
         }
     }
 
     @Test
-    public void testInitialClassLoader() throws MalformedURLException, ClassNotFoundException {
-        Object actualInitialClass = factory.getClass("initial");
+    public void testInitialClassLoader() throws MalformedURLException, ClassNotFoundException, InstantiationException, IllegalAccessException {
+        MyClass actualInitialClass = factory.getClass(Classes.INITIAL);
         assertEquals(actualInitialClass.getClass(), expectedMyClass.getClass());
     }
     @Test
-    public void testReloadedClassLoader() throws MalformedURLException, ClassNotFoundException {
-        Object actualReloadedClass = factory.getClass("reloaded");
+    public void testReloadedClassLoader() throws MalformedURLException, ClassNotFoundException, InstantiationException, IllegalAccessException {
+        MyClass actualReloadedClass = factory.getClass(Classes.RELOADED);
         assertEquals(actualReloadedClass.getClass(), expectedReloadedClass.getClass());
+    }
+    @Test
+    public void testSubclassLoader() throws MalformedURLException, ClassNotFoundException, InstantiationException, IllegalAccessException {
+        MyClass actualSubclass = factory.getClass(Classes.SUBCLASS);
+        assertEquals(actualSubclass.getClass(), expectedSubclass.getClass());
     }
 }

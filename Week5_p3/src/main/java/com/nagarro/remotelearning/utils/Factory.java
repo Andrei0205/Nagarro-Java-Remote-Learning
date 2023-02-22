@@ -7,35 +7,35 @@ import java.net.URLClassLoader;
 
 public class Factory {
 
-    public Object getClass(String type) throws MalformedURLException, ClassNotFoundException {
-        if(type == null ) {
-            return null;
+    public MyClass getClass(Classes type) throws MalformedURLException, ClassNotFoundException, InstantiationException, IllegalAccessException {
+
+        switch (type) {
+            case INITIAL:
+                return new MyClass();
+            case RELOADED:
+                File file = new File("D:\\DynamicClass\\target\\classes");
+
+                URL url = file.toURI().toURL();
+                URL[] urls = new URL[]{url};
+
+                ClassLoader classLoader = new URLClassLoader(urls);
+
+                Class myClass = classLoader.loadClass("com.nagarro.remotelearning.utils.MyClass");
+                return (MyClass) myClass.newInstance();
+            case SUBCLASS:
+                 file = new File("D:\\DynamicClass\\target\\classes");
+
+                 url = file.toURI().toURL();
+                 urls = new URL[]{url};
+
+                 classLoader = new URLClassLoader(urls);
+
+                 myClass = classLoader.loadClass("com.nagarro.remotelearning.utils.SubClass");
+                return (MyClass) myClass.newInstance();
+            default:
+                return null;
         }
-        if(type.equalsIgnoreCase("initial")){
-            return new MyClass();
-        }
-        if(type.equalsIgnoreCase("reloaded")) {
-            File file = new File("D:\\DynamicClass\\target\\classes");
 
-            URL url = file.toURI().toURL();
-            URL[] urls = new URL[]{url};
-
-            ClassLoader classLoader = new URLClassLoader(urls);
-
-            Class myClass = classLoader.loadClass("org.example.utils.MyClass");
-            return myClass;
-        } if(type.equalsIgnoreCase("subclass")) {
-            File file = new File("D:\\DynamicClass\\target\\classes");
-
-            URL url = file.toURI().toURL();
-            URL[] urls = new URL[]{url};
-
-            ClassLoader classLoader = new URLClassLoader(urls);
-
-            Class myClass = classLoader.loadClass("org.example.utils.SubClass");
-            return myClass;
-        }
-        return null;
     }
 
 }
