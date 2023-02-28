@@ -1,5 +1,5 @@
-import com.nagarro.remotelearning.utils.Classes;
-import com.nagarro.remotelearning.utils.Factory;
+import com.nagarro.remotelearning.utils.ClassType;
+import com.nagarro.remotelearning.utils.MyClassFactory;
 import com.nagarro.remotelearning.utils.MyClass;
 import org.junit.Before;
 import org.junit.Test;
@@ -15,13 +15,13 @@ public class ClassLoaderTest {
     MyClass expectedMyClass;
     MyClass expectedReloadedClass;
     MyClass expectedSubclass;
-    Factory factory;
+    MyClassFactory factory;
 
 
     @Before
     public void setUp() {
         this.expectedMyClass = new MyClass();
-        this.factory = new Factory();
+        this.factory = new MyClassFactory();
         try {
             File file = new File("D:\\DynamicClass\\target\\classes");
 
@@ -52,17 +52,17 @@ public class ClassLoaderTest {
 
     @Test
     public void testInitialClassLoader() throws MalformedURLException, ClassNotFoundException, InstantiationException, IllegalAccessException {
-        MyClass actualInitialClass = factory.getClass(Classes.INITIAL);
+        MyClass actualInitialClass = factory.getClass(ClassType.INITIAL);
         assertEquals(actualInitialClass.getClass(), expectedMyClass.getClass());
     }
     @Test
     public void testReloadedClassLoader() throws MalformedURLException, ClassNotFoundException, InstantiationException, IllegalAccessException {
-        MyClass actualReloadedClass = factory.getClass(Classes.RELOADED);
+        MyClass actualReloadedClass = factory.getClass(ClassType.RELOADED);
         assertEquals(actualReloadedClass.getClass(), expectedReloadedClass.getClass());
     }
     @Test
     public void testSubclassLoader() throws MalformedURLException, ClassNotFoundException, InstantiationException, IllegalAccessException {
-        MyClass actualSubclass = factory.getClass(Classes.SUBCLASS);
+        MyClass actualSubclass = factory.getClass(ClassType.SUBCLASS);
         assertEquals(actualSubclass.getClass(), expectedSubclass.getClass());
     }
 }

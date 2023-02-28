@@ -18,6 +18,14 @@ public enum Month {
     Month(int index) {
         this.index = index;
     }
+    public static Month getMonthAtIndex(int givenIndex) {
+        for(Month month : Month.values()) {
+            if(givenIndex == month.getIndex()){
+                return month;
+            }
+        }
+        throw new UnsupportedOperationException("Please enter index <= 12");
+    }
 
     public int getIndex() {
         return index;

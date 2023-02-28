@@ -15,6 +15,15 @@ public enum Day {
         this.index = index;
     }
 
+    public static Day getDayAtIndex(int givenIndex) {
+        for(Day day : Day.values()) {
+            if(givenIndex == day.getIndex()){
+                return day;
+            }
+        }
+        throw new UnsupportedOperationException("Please enter index <= 7");
+    }
+
     public int getIndex() {
         return index;
     }
