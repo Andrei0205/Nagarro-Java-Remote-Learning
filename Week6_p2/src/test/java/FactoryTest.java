@@ -1,7 +1,5 @@
 
 import com.nagarro.remotelearning.domain.Employee;
-import com.nagarro.remotelearning.domain.Engine;
-import com.nagarro.remotelearning.exception.UnauthorizedEmployeeException;
 import com.nagarro.remotelearning.exception.UnqualifiedEmployeeException;
 import com.nagarro.remotelearning.factory.EngineFactory;
 import com.nagarro.remotelearning.service.EmployeeService;
@@ -10,8 +8,7 @@ import static org.easymock.EasyMock.*;
 import org.easymock.*;
 import org.junit.*;
 
-import java.util.List;
-import static org.junit.Assert.assertEquals;
+
 
 public class FactoryTest {
 
@@ -32,7 +29,13 @@ public class FactoryTest {
 
     @Test
     public void manufactureEngineTest() {
-        expect(mock.isAssemblyLineWorker(employee)).andReturn(true);
+        expect(mock.isAssemblyLineWorker(anyObject())).andReturn(true);
+        replay(mock);
+        classUnderTest.manufactureEngines(1,employee);
+    }
+    @Test(expected = UnqualifiedEmployeeException.class)
+    public void manufactureEngineTest2() {
+        expect(mock.isAssemblyLineWorker(anyObject())).andReturn(false);
         replay(mock);
         classUnderTest.manufactureEngines(1,employee);
     }
