@@ -24,12 +24,12 @@ public class SentenceCreator {
 
     private String createOneSentence() {
         StringBuilder sentence = new StringBuilder();
-        sentence.append(capitalizeFirstLetter(getOneArticle()));
-        sentence.append(getOneNoun()).append(BLANK_SPACE);
-        sentence.append(getOneVerb()).append(BLANK_SPACE);
-        sentence.append(getOnePreposition()).append(BLANK_SPACE);
-        sentence.append(getOneArticle()).append(BLANK_SPACE);
-        sentence.append(getOneNoun());
+        sentence.append(capitalizeFirstLetter(getRandomWordFrom(ARTICLES)));
+        sentence.append(getRandomWordFrom(NOUNS)).append(BLANK_SPACE);
+        sentence.append(getRandomWordFrom(VERBS)).append(BLANK_SPACE);
+        sentence.append(getRandomWordFrom(PREPOSITIONS)).append(BLANK_SPACE);
+        sentence.append(getRandomWordFrom(ARTICLES)).append(BLANK_SPACE);
+        sentence.append(getRandomWordFrom(NOUNS));
         sentence.append(PERIOD);
         return sentence.toString();
     }
@@ -40,20 +40,8 @@ public class SentenceCreator {
         return stringBuilder.toString();
     }
 
-    private String getOnePreposition() {
-        return PREPOSITIONS.get(random.nextInt(5));
-    }
-
-    private String getOneVerb() {
-        return VERBS.get(random.nextInt(5));
-    }
-
-    private String getOneNoun() {
-        return NOUNS.get(random.nextInt(5));
-    }
-
-    private String getOneArticle() {
-        return ARTICLES.get(random.nextInt(5));
+    private String getRandomWordFrom(List<String> list) {
+        return list.get(random.nextInt(5));
     }
 }
 

@@ -1,7 +1,4 @@
-package com.nagarro.remotelearning.app;
-
-import com.nagarro.remotelearning.model.Dispatcher;
-import com.nagarro.remotelearning.model.Person;
+package com.nagarro.remotelearning.model;
 
 import java.util.List;
 
@@ -19,7 +16,12 @@ public class DispatchOperator implements Person, Dispatcher {
         System.out.println("Operator " + name + " eats");
     }
 
-    private TaxiDriver getBestAvailableTaxi(String location) {
+    @Override
+    public void sleep() {
+
+    }
+
+    public TaxiDriver getBestAvailableTaxi(String location) {
         return drivers.get(0);
     }
 

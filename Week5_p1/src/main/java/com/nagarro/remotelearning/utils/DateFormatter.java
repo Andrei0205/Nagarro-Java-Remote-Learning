@@ -12,18 +12,8 @@ public class DateFormatter {
         int dayOfWeekValue = localDate.getDayOfWeek().getValue();
         int monthValue = localDate.getMonth().getValue();
         StringBuilder stringBuilder = new StringBuilder();
-        for (Day day : Day.values()) {
-            if (dayOfWeekValue == day.getIndex()) {
-                stringBuilder.append(day).append(" ");
-                break;
-            }
-        }
-        for (Month month : Month.values()) {
-            if (monthValue == month.getIndex()) {
-                stringBuilder.append(month).append(" ");
-                break;
-            }
-        }
+        stringBuilder.append(Day.getDayAtIndex(dayOfWeekValue)).append(" ");
+        stringBuilder.append(Month.getMonthAtIndex(monthValue)).append(" ");
         stringBuilder.append(localDate.getYear());
         return stringBuilder.toString();
 
