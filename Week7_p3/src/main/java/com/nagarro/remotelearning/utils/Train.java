@@ -3,9 +3,9 @@ package com.nagarro.remotelearning.utils;
 import java.util.Objects;
 
 public class Train {
-    private int number;
-    private String type;
-    private int noWagons;
+    private final int number;
+    private final String type;
+    private final int noWagons;
 
     public Train(int number, String type, int noWagons) {
         this.number = number;
@@ -14,10 +14,10 @@ public class Train {
     }
 
     @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        Train train = (Train) o;
+    public boolean equals(Object anotherTrain) {
+        if (this == anotherTrain) return true;
+        if (anotherTrain == null || getClass() != anotherTrain.getClass()) return false;
+        Train train = (Train) anotherTrain;
         return number == train.number && noWagons == train.noWagons && type.equals(train.type);
 
     }
