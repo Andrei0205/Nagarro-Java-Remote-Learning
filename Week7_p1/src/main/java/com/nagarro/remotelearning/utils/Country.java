@@ -1,8 +1,8 @@
 package com.nagarro.remotelearning.utils;
 
 public class Country implements Comparable<Country> {
-    private String name;
-    private String capital;
+    private final String name;
+    private final String capital;
 
     public Country(String name, String capital) {
         this.name = name;
@@ -18,8 +18,8 @@ public class Country implements Comparable<Country> {
     }
 
     @Override
-    public int compareTo(Country o) {
-        return name.compareTo(o.getName());
+    public int compareTo(Country country) {
+        return name.compareTo(country.getName());
     }
 
 

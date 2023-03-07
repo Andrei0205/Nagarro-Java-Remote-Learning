@@ -9,7 +9,7 @@ import java.util.Random;
 public class CountryGenerator {
     private final List<String> countryNames = Arrays.asList("Romania", "Bulgaria", "Franta", "Ungaria", "Spania", "Italia");
     private final List<String> countryCapitals = Arrays.asList("Bucuresti", "Sofia", "Paris", "Budapesta", "Madrid", "Roma");
-    private Random random = new Random();
+    private final Random random = new Random();
 
     public List<Country> generateRandom(int noOfCountries) {
         List<Country> countries = new ArrayList<>();
