@@ -15,8 +15,10 @@ public class Main {
         TrainGenerator trainGenerator = new TrainGenerator();
         trains = trainGenerator.getTrains();
         Train[] values = trains.keySet().toArray(new Train[trains.size()]);
-        System.out.println(System.currentTimeMillis());
-        System.out.println(trains.get(values[random.nextInt(trains.size())]));
-        System.out.println(System.currentTimeMillis());
+        long date1 = System.currentTimeMillis();
+        System.out.println(date1);
+        System.out.println(trains.get(values[trains.size()-1]));
+        long date2 = System.currentTimeMillis();
+        System.out.println(date2-date1);
     }
 }
