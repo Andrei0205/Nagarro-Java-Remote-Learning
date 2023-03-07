@@ -1,18 +1,18 @@
 package com.nagarro.remotelearning.utils;
 
 public class Card {
-    private int number;
-    private String suite;
+    private final int number;
+    private final Suite suite; // enum
 
     public int getNumber() {
         return number;
     }
 
-    public String getSuite() {
+    public Suite getSuite() {
         return suite;
     }
 
-    public Card(int number, String suite) {
+    public Card(int number, Suite suite) {
         this.number = number;
         this.suite = suite;
     }

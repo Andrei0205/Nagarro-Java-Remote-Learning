@@ -1,18 +1,17 @@
 package com.nagarro.remotelearning.utils;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 
 public class DeckCardGenerator {
-    private final List<String> suits = Arrays.asList("Clover", "Diamond", "Red", "Black");
+    private static final int LAST_CARD = 14;
 
     public List<Card> getDeck() {
         List<Card> deck = new ArrayList<>();
-        for (int i = 1; i < 14; i++) {
-            for (int j = 0; j < 4; j++){
-                deck.add(new Card(i, suits.get(j)));
+        for (int index = 1; index < LAST_CARD; index++) {
+            for (Suite suite : Suite.values()){
+                deck.add(new Card(index, suite));
             }
         }
         return deck;

@@ -11,23 +11,19 @@ import java.util.List;
 import java.util.Random;
 
 public class CardTest {
-    List<Card> cards;
-    DeckCardGenerator deckCardGenerator;
 
-    @Before
-    public void setUp() {
-        deckCardGenerator = new DeckCardGenerator();
-        cards = deckCardGenerator.getDeck();
-    }
+
+    private static final int FIRST_CARD = 0;
+    private static final int SECOND_CARD = 1;
 
     @Test()
     public void shuffleTest() {
-        List<Card> copyArrayCards = new ArrayList<>();
-        copyArrayCards.addAll(cards);
+        DeckCardGenerator deckCardGenerator = new DeckCardGenerator();
+        List<Card> cards = deckCardGenerator.getDeck();
+        int sumBeforeShuffle = cards.get(FIRST_CARD).getNumber() + cards.get(SECOND_CARD).getNumber();
         Collections.shuffle(cards);
-        Random random = new Random();
-        int randomIndex = random.nextInt(cards.size());
-        assertNotEquals(cards.get(randomIndex), copyArrayCards.get(randomIndex));
+        int sumAfterShuffle = cards.get(FIRST_CARD).getNumber() + cards.get(SECOND_CARD).getNumber();
+        assertNotEquals(sumBeforeShuffle,sumAfterShuffle);
 
     }
 
