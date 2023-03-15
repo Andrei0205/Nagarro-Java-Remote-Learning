@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class Sorter {
-    public static <T extends Comparable> List<T> sortWithPriorityQueue(List<T> list) {
+    public <T extends Comparable> List<T> sortWithPriorityQueue(List<T> list) {
         MyPriorityQueue<T> priorityQueue = new MyPriorityQueue<>();
         List<T> sortedList = new ArrayList<>();
         for (T element : list) {

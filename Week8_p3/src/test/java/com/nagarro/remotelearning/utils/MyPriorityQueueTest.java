@@ -82,12 +82,13 @@ public class MyPriorityQueueTest {
     @Test
     public void sortingTest() {
         List<Integer> unsortedList = new ArrayList<>();
+        Sorter sorter = new Sorter();
         unsortedList.add(79);
         unsortedList.add(44);
         unsortedList.add(1);
         unsortedList.add(1089);
         unsortedList.add(269);
-        List<Integer> sortedList = Sorter.sortWithPriorityQueue(unsortedList);
+        List<Integer> sortedList = sorter.sortWithPriorityQueue(unsortedList);
         assertEquals(Integer.valueOf(1089), sortedList.get(0));
     }
 

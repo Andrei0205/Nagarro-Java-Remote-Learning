@@ -6,9 +6,9 @@ import java.util.List;
 public class MyPriorityQueue<E extends Comparable> implements Comparable<MyPriorityQueue<E>> {
 
     private static final int DEFAULT_MAXIMUM_SIZE = 10000;
-    private List<E> data = new ArrayList<>();
+    private final List<E> data = new ArrayList<>();
 
-    private int maxSize;
+    private final int maxSize;
 
     public MyPriorityQueue() {
         maxSize = DEFAULT_MAXIMUM_SIZE;
@@ -31,9 +31,7 @@ public class MyPriorityQueue<E extends Comparable> implements Comparable<MyPrior
             if (data.get(currentItem).compareTo(data.get(priorityItem)) <= 0) {
                 break;
             }
-            E temporary = data.get(currentItem);
-            data.set(currentItem, data.get(priorityItem));
-            data.set(priorityItem, temporary);
+            swapElements(data,currentItem,priorityItem);
             currentItem = priorityItem;
         }
     }
@@ -56,16 +54,13 @@ public class MyPriorityQueue<E extends Comparable> implements Comparable<MyPrior
                 currentItem = rightCurrent;
             if (data.get(priorityItem).compareTo(data.get(currentItem)) >= 0)
                 break;
-            E temporary = data.get(priorityItem);
-            data.set(priorityItem, data.get(currentItem));
-            data.set(currentItem, temporary);
-            priorityItem = currentItem;
+            swapElements(data,priorityItem,currentItem);
         }
         return frontItem;
     }
 
     public E head() {
-        return (data.isEmpty()) ? null : (E) data.get(0);
+        return (data.isEmpty()) ? null : data.get(0);
     }
 
     public void clear() {
@@ -79,5 +74,12 @@ public class MyPriorityQueue<E extends Comparable> implements Comparable<MyPrior
     @Override
     public int compareTo(MyPriorityQueue o) {
         return this.head().compareTo(o.head());
+    }
+
+    private void swapElements(List<E> data,int element1,int element2) {
+        E temporary = data.get(element1);
+        data.set(element1, data.get(element2));
+        data.set(element2, temporary);
+        element1 = element2;
     }
 }
