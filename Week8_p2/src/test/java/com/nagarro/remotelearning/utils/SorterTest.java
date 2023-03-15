@@ -10,6 +10,7 @@ import static org.junit.Assert.*;
 public class SorterTest {
     @Test
     public void integerListTest() {
+        Sorter sorter = new Sorter();
         List<Integer> unsortedList = new ArrayList<>();
         unsortedList.add(1089);
         unsortedList.add(469);
@@ -17,7 +18,7 @@ public class SorterTest {
         unsortedList.add(5);
         unsortedList.add(78);
         unsortedList.add(3089);
-        List<Integer> sortedList = Sorter.bubbleSort(unsortedList);
+        List<Integer> sortedList = (List<Integer>) sorter.bubbleSort(unsortedList);
         assertEquals(Integer.valueOf(12), sortedList.get(1));
     }
 

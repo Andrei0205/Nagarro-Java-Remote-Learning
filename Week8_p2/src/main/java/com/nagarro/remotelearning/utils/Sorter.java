@@ -3,31 +3,21 @@ package com.nagarro.remotelearning.utils;
 import java.util.*;
 
 public class Sorter {
-    public static <T extends Comparable> List<T> bubbleSort(List<T> list) {
-        int staticElementIndex = 0;
-        int subListStartIndex = 1;
-        int mobileIndex;
-        List<T> subList;
-        for (T staticElement : list) {
-            if (staticElement.equals(list.get(list.size() - 1))) {
-                break;
-            }
-            subList = list.subList(subListStartIndex, list.size());
-            mobileIndex = subListStartIndex;
-            for (T mobileElement : subList) {
+    public <T extends Comparable<T>> Collection<T> bubbleSort(Collection<T> collectionToSort) {
 
-                if (staticElement.compareTo(mobileElement) > 0) {
-                    T temporary = staticElement;
-                    list.set(staticElementIndex, mobileElement);
-                    staticElement = mobileElement;
-                    list.set(mobileIndex, temporary);
+        T[] arrayFromCollection = collectionToSort.toArray((T[]) new Comparable[collectionToSort.size()]);
+
+        int lastElement = arrayFromCollection.length;
+        for (int iterator = 0; iterator < lastElement - 1; iterator++)
+            for (int itemToSwap = 0; itemToSwap < lastElement - iterator - 1; itemToSwap++)
+                if (arrayFromCollection[itemToSwap].compareTo(arrayFromCollection[itemToSwap + 1]) > 0) {
+                    T temp = arrayFromCollection[itemToSwap];
+                    arrayFromCollection[itemToSwap] = arrayFromCollection[itemToSwap + 1];
+                    arrayFromCollection[itemToSwap + 1] = temp;
                 }
-                mobileIndex++;
-            }
-            staticElementIndex++;
-            subListStartIndex++;
-        }
 
-        return list;
+        collectionToSort = Arrays.asList(arrayFromCollection);
+
+        return collectionToSort;
     }
 }
