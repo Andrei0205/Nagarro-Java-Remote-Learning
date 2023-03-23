@@ -3,6 +3,7 @@ package com.nagarro.remotelearning.utils;
 import org.junit.Test;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import static org.junit.Assert.*;
@@ -19,7 +20,8 @@ public class SorterTest {
         unsortedList.add(78);
         unsortedList.add(3089);
         List<Integer> sortedList = (List<Integer>) sorter.bubbleSort(unsortedList);
-        assertEquals(Integer.valueOf(12), sortedList.get(1));
+        List<Integer> expectedList = new ArrayList<>(Arrays.asList(5,12,78,469,1089,3089));
+        assertEquals(expectedList,sortedList);
     }
 
 }

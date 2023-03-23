@@ -11,13 +11,17 @@ public class Sorter {
         for (int iterator = 0; iterator < lastElement - 1; iterator++)
             for (int itemToSwap = 0; itemToSwap < lastElement - iterator - 1; itemToSwap++)
                 if (arrayFromCollection[itemToSwap].compareTo(arrayFromCollection[itemToSwap + 1]) > 0) {
-                    T temp = arrayFromCollection[itemToSwap];
-                    arrayFromCollection[itemToSwap] = arrayFromCollection[itemToSwap + 1];
-                    arrayFromCollection[itemToSwap + 1] = temp;
+                    swaptToNextElement(arrayFromCollection, itemToSwap);
                 }
 
         collectionToSort = Arrays.asList(arrayFromCollection);
 
         return collectionToSort;
+    }
+
+    private  <T extends Comparable<T>> void swaptToNextElement(T[] arrayFromCollection, int itemToSwap) {
+        T temp = arrayFromCollection[itemToSwap];
+        arrayFromCollection[itemToSwap] = arrayFromCollection[itemToSwap + 1];
+        arrayFromCollection[itemToSwap + 1] = temp;
     }
 }
