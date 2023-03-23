@@ -1,17 +1,18 @@
 package com.nagarro.remotelearning.utils;
 
 import java.util.LinkedList;
+import java.util.List;
 
 public class Server {
 
-    private LinkedList<Integer> list = new LinkedList<>();
+    private final List<Integer> log = new LinkedList<>();
     private static int value = 0;
 
     public synchronized void add(int id) throws InterruptedException {
 
         while (true) {
             int capacity = 10;
-            while (list.size() == capacity) {
+            while (log.size() == capacity) {
                 try {
                     wait();
                 } catch (InterruptedException e) {
@@ -20,9 +21,8 @@ public class Server {
             }
 
             System.out.println("Thread " + id + " added task => " + value);
-            list.add(value++);
+            log.add(value++);
             notifyAll();
-            Thread.sleep(200);
         }
     }
 
@@ -30,14 +30,14 @@ public class Server {
     public synchronized void consume(int id) throws InterruptedException {
         int val;
         while (true) {
-            while (list.isEmpty()) {
+            while (log.isEmpty()) {
                 try {
                     wait();
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
             }
-            val = list.removeFirst();
+            val = log.remove(0);
             System.out.println("Thread " + id + " consumed task => " + val);
             notifyAll();
             Thread.sleep(200);
