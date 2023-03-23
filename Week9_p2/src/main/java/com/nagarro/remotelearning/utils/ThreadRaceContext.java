@@ -1,9 +1,11 @@
 package com.nagarro.remotelearning.utils;
 
-import java.util.Vector;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 
 public class ThreadRaceContext {
-    private final Vector<Integer> log = new Vector<>();
+    private final List<Integer> log = Collections.synchronizedList(new ArrayList<>());
 
     public void finish(ThreadCompetitor competitor) {
         log.add(competitor.getId());

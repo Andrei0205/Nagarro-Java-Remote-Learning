@@ -1,28 +1,30 @@
 package com.nagarro.remotelearning.utils;
 
+import java.util.Random;
 import java.util.concurrent.CountDownLatch;
 
 public class ThreadCompetitor implements Runnable {
     private final int id;
-    private final CountDownLatch startsignal;
+    private final CountDownLatch startSignal;
     private final CountDownLatch endSignal;
     private final ThreadRaceContext threadRaceContext;
+
+
+    public ThreadCompetitor(int id, CountDownLatch startSignal, CountDownLatch endSignal, ThreadRaceContext raceContext) {
+        this.id = id;
+        this.startSignal = startSignal;
+        this.endSignal = endSignal;
+        threadRaceContext = raceContext;
+    }
 
     public int getId() {
         return id;
     }
 
-    public ThreadCompetitor(int id, CountDownLatch startsignal, CountDownLatch endSignal, ThreadRaceContext raceContext) {
-        this.id = id;
-        this.startsignal = startsignal;
-        this.endSignal = endSignal;
-        threadRaceContext = raceContext;
-    }
-
     @Override
     public void run() {
         try {
-            startsignal.await();
+            startSignal.await();
             doWork();
             endSignal.countDown();
         } catch (InterruptedException e) {
@@ -31,10 +33,8 @@ public class ThreadCompetitor implements Runnable {
     }
 
     private void doWork() throws InterruptedException {
-        Thread.sleep(200);
-        synchronized (this) {
-            threadRaceContext.finish(this);
-        }
+        Thread.sleep(new Random().nextInt(2000));
+        threadRaceContext.finish(this);
     }
 
 }
