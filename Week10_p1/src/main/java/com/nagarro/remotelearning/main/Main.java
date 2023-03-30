@@ -14,8 +14,8 @@ public class Main {
         URL res = Main.class.getClassLoader().getResource("file.txt");
         File file = Paths.get(res.toURI()).toFile();
         String filePath = file.getAbsolutePath();
-        RandomAccessWritter writter = new RandomAccessWritter("file.txt");
-        RandomAccessReader reader = new RandomAccessReader("file.txt");
+        RandomAccessWritter writter = new RandomAccessWritter(filePath);
+        RandomAccessReader reader = new RandomAccessReader(filePath);
         writter.writeSomeInteger();
         reader.readAtPosition(2);
         reader.readAtPosition(3);

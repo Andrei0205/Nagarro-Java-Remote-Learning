@@ -5,6 +5,7 @@ import java.io.RandomAccessFile;
 
 public class RandomAccessWritter {
     private String file;
+
     public RandomAccessWritter(String file) {
         this.file = file;
     }
