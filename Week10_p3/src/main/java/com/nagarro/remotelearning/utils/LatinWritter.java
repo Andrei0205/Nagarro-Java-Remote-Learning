@@ -11,6 +11,7 @@ public class LatinWritter {
         Writer writer = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(getPathFromResource(file)), StandardCharsets.ISO_8859_1));
         writer.write(text);
         writer.close();
+        //stream close + NPE
     }
 
     private String getPathFromResource(String fileName) throws URISyntaxException {

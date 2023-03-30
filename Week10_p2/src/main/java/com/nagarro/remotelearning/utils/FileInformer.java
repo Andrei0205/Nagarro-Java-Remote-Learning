@@ -23,6 +23,6 @@ public class FileInformer {
 
     private URI getUrlFromResourceFile(String fileName) throws URISyntaxException {
         return Main.class.getClassLoader().getResource(fileName).toURI();
-
+        //todo NPE
     }
 }

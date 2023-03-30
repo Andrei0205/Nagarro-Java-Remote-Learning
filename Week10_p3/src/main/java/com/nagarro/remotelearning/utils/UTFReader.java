@@ -10,6 +10,8 @@ public class UTFReader {
     public String read(String file) throws IOException, URISyntaxException {
         BufferedReader reader = new BufferedReader(new InputStreamReader(new FileInputStream(getPathFromResource(file)), StandardCharsets.UTF_8));
         return reader.readLine();
+        //close streams
+        //la tratarea exceptiilor de inchis stream
     }
 
     private String getPathFromResource(String fileName) throws URISyntaxException {
@@ -17,4 +19,6 @@ public class UTFReader {
         File file = Paths.get(res.toURI()).toFile();
         return file.getAbsolutePath();
     }
+
+    //abstract class + NPE
 }

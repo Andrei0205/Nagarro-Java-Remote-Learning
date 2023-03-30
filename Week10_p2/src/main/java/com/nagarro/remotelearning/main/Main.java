@@ -13,7 +13,7 @@ public class Main {
             throws IOException, URISyntaxException {
 
         FileArchiver fileArchiver = new FileArchiver();
-        fileArchiver.readAndArchive("uncompressed.txt", "compressedFile.gz");
+        fileArchiver.archive("uncompressed.txt", "compressedFile.gz");
         FileInformer fileInformer = new FileInformer();
         double compressedFileSize = fileInformer.getFileSize("compressedFile.gz");
         double uncompressedFileSize = fileInformer.getFileSize("uncompressed.txt");

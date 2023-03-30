@@ -10,20 +10,24 @@ import java.util.zip.GZIPOutputStream;
 
 public class FileArchiver {
 
-    public void readAndArchive(String source, String destination) throws IOException, URISyntaxException {
+    public void archive(String source, String destination) throws IOException, URISyntaxException {
         BufferedReader reader = new BufferedReader(
                 new FileReader(getPathFromResource(source)));
         BufferedOutputStream writter = new BufferedOutputStream(
                 new GZIPOutputStream(new FileOutputStream(getPathFromResource(destination))));
         int element;
-        while ((element = reader.read()) != -1)
+        while ((element = reader.read()) != -1) {
             writter.write(element);
+        }
         reader.close();
         writter.close();
+        //treat exceptions
+        //close all output.input streams
     }
 
     private String getPathFromResource(String fileName) throws URISyntaxException {
         URL res = Main.class.getClassLoader().getResource(fileName);
+        //NPE
         File file = Paths.get(res.toURI()).toFile();
         return file.getAbsolutePath();
     }
