@@ -1,25 +1,19 @@
 package com.nagarro.remotelearning.main;
 
-import com.nagarro.remotelearning.utils.LatinReader;
-import com.nagarro.remotelearning.utils.LatinWritter;
-import com.nagarro.remotelearning.utils.UTFReader;
-import com.nagarro.remotelearning.utils.UTFWritter;
-
-import java.io.*;
-import java.net.URISyntaxException;
+import com.nagarro.remotelearning.utils.*;
+import com.nagarro.remotelearning.utils.Reader;
+import java.nio.charset.StandardCharsets;
 
 
 public class Main {
-    public static void main(String[] args) throws IOException, URISyntaxException {
-        LatinReader latinReader = new LatinReader();
-        UTFWritter utfWritter = new UTFWritter();
-        String textLatinToUTF = latinReader.read("latinText.txt");
-        utfWritter.write("test.txt", textLatinToUTF);
+    public static void main(String[] args) {
+        Reader reader = new Reader();
+        MyWritter writter = new MyWritter();
+        String textLatinToUTF = reader.read("latinText.txt", StandardCharsets.ISO_8859_1);
+        writter.write("test.txt", textLatinToUTF, StandardCharsets.UTF_8);
 
-        UTFReader utfReader = new UTFReader();
-        LatinWritter latinWritter = new LatinWritter();
-        String textUTFToLatin = utfReader.read("UTFText.txt");
-        latinWritter.write("latinFromUTF.txt", textUTFToLatin);
+        String textUTFToLatin = reader.read("UTFText.txt", StandardCharsets.UTF_8);
+        writter.write("latinFromUTF.txt", textUTFToLatin, StandardCharsets.ISO_8859_1);
 
     }
 
