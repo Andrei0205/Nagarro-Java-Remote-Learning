@@ -10,25 +10,33 @@ import java.util.zip.GZIPOutputStream;
 
 public class FileArchiver {
 
-    public void archive(String source, String destination) throws IOException, URISyntaxException {
-        BufferedReader reader = new BufferedReader(
-                new FileReader(getPathFromResource(source)));
-        BufferedOutputStream writter = new BufferedOutputStream(
-                new GZIPOutputStream(new FileOutputStream(getPathFromResource(destination))));
-        int element;
-        while ((element = reader.read()) != -1) {
-            writter.write(element);
+    public void archive(String source, String destination) {
+        try (
+                FileReader fileReader = new FileReader(getPathFromResource(source));
+                BufferedReader reader = new BufferedReader(fileReader);
+                FileOutputStream fileOutputStream = new FileOutputStream(getPathFromResource(destination));
+                GZIPOutputStream gzipOutputStream = new GZIPOutputStream(fileOutputStream);
+                BufferedOutputStream writter = new BufferedOutputStream(gzipOutputStream);
+                ) {
+            int element;
+            while ((element = reader.read()) != -1) {
+                writter.write(element);
+            }
+        } catch (IOException e) {
+            System.out.println("File not found");
         }
-        reader.close();
-        writter.close();
-        //treat exceptions
-        //close all output.input streams
     }
 
-    private String getPathFromResource(String fileName) throws URISyntaxException {
+    private String getPathFromResource(String fileName) {
         URL res = Main.class.getClassLoader().getResource(fileName);
-        //NPE
-        File file = Paths.get(res.toURI()).toFile();
-        return file.getAbsolutePath();
+        if(res != null) {
+            try {
+                File file = Paths.get(res.toURI()).toFile();
+                return file.getAbsolutePath();
+            } catch (URISyntaxException e) {
+                System.out.println("File not found");
+            }
+        }
+        return "not found";
     }
 }

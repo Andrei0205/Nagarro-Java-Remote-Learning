@@ -8,9 +8,9 @@ import java.io.*;
 import java.net.URISyntaxException;
 
 
-public class Main {
-    public static void main(String[] args)
-            throws IOException, URISyntaxException {
+public class
+Main {
+    public static void main(String[] args) {
 
         FileArchiver fileArchiver = new FileArchiver();
         fileArchiver.archive("uncompressed.txt", "compressedFile.gz");
