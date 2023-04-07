@@ -20,7 +20,7 @@ public class FactoryTest {
     private EmployeeService mock;
 
     @TestSubject
-    private EngineFactory classUnderTest = new EngineFactory(mock);
+    private final EngineFactory classUnderTest = new EngineFactory(mock);
 
     @Before
     public void setUp() {

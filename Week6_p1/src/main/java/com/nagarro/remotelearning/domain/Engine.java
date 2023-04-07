@@ -2,9 +2,9 @@ package com.nagarro.remotelearning.domain;
 
 public class Engine {
     
-    private EngineArchitecture engineArchitecture;
-    private double displacement;
-    private int horsePower;
+    private final EngineArchitecture engineArchitecture;
+    private final double displacement;
+    private final int horsePower;
 
     public Engine(EngineArchitecture engineArchitecture, double displacement, int horsePower) {
         this.engineArchitecture = engineArchitecture;

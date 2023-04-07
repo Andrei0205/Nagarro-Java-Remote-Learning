@@ -7,8 +7,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class Canvas implements Drawable {
-    private String canvasName;
-    private List<Drawable> shapes = new ArrayList<>();
+    private final String canvasName;
+    private final List<Drawable> shapes = new ArrayList<>();
 
     public Canvas(String name) {
         this.canvasName = name;

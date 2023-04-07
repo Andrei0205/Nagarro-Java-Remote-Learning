@@ -3,9 +3,9 @@ package com.nagarro.remotelearning.domain;
 
 public class Employee {
 
-    private String name;
-    private boolean isAssemblyLineWorker;
-    private boolean isAdministrator;
+    private final String name;
+    private final boolean isAssemblyLineWorker;
+    private final boolean isAdministrator;
 
     public Employee(String name, boolean isAdministrator, boolean isAssemblyLineWorker) {
         this.name = name;

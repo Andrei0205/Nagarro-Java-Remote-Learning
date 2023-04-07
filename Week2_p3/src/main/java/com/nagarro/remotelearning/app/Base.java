@@ -1,13 +1,13 @@
 package com.nagarro.remotelearning.app;
 
 public class Base {
-    private Child classChild = new Child();
-    private static int i = initializeInt(3);
-    private static int j = initializeInt(30);;
-    private static int y;
+    private final Child classChild = new Child();
+    private static final int i = initializeInt(3);
+    private static final int j = initializeInt(30);
+    private static final int y;
 
-    private String b = initializeString("Base");
-    private String c;
+    private final String b = initializeString("Base");
+    private final String c;
 
     static {
         y = 3;

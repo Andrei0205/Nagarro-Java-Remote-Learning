@@ -13,9 +13,6 @@ public class PalindromeValidator implements Validator {
             sum = (sum * 10) + reverse;
             number = number / 10;
         }
-        if (temp == sum)
-            return true;
-        else
-            return false;
+        return temp == sum;
     }
 }

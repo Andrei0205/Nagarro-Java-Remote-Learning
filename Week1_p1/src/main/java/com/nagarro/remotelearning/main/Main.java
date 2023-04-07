@@ -34,6 +34,7 @@ public class Main {
                 for (int i = 0; i < persons.size(); i++) {
                     if (newPerson.equals(persons.get(i))) {
                         validator = false;
+                        break;
                     }
                 }
                 if (validator) {

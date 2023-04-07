@@ -19,10 +19,9 @@ public class PigLatinEncoder {
     }
 
     private String transformWordIntoPigLatin(String word) {
-        StringBuilder stringBuilder = new StringBuilder();
-        stringBuilder.append(word.substring(SUBSTRING_INDEX));
-        stringBuilder.append(word.charAt(FIRST_LETTER_INDEX));
-        stringBuilder.append(PIG_LATIN_SUFFIX);
-        return stringBuilder.toString();
+        String stringBuilder = word.substring(SUBSTRING_INDEX) +
+                word.charAt(FIRST_LETTER_INDEX) +
+                PIG_LATIN_SUFFIX;
+        return stringBuilder;
     }
 }

@@ -3,7 +3,7 @@ package com.nagarro.remotelearning.app;
 import com.nagarro.remotelearning.model.Domain;
 
 public class Registrar {
-    private Registry registry;
+    private final Registry registry;
 
     public Registrar(Registry registry) {
         this.registry = registry;

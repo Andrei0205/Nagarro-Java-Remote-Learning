@@ -7,7 +7,7 @@ import static org.junit.Assert.assertEquals;
 
 public class TitlelizerImplTest {
 
-    private StringTitlelizer titlelizer = new StringTitlelizer();
+    private final StringTitlelizer titlelizer = new StringTitlelizer();
 
     @Test(expected = IllegalArgumentException.class)
     public void testTitlelizeForNullShouldThrowException() throws Exception {

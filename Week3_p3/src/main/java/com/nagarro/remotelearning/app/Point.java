@@ -3,8 +3,8 @@ package com.nagarro.remotelearning.app;
 import com.nagarro.remotelearning.model.Drawable;
 
 public class Point implements Drawable {
-    private double coordinateX;
-    private double coordinateY;
+    private final double coordinateX;
+    private final double coordinateY;
 
     public Point(double coordinateX, double coordinateY) {
         this.coordinateX = coordinateX;

@@ -5,7 +5,7 @@ import java.util.List;
 
 public class ConnectionsManager extends Connection {
     private static final int NUMBER_OF_CONNECTIONS = 20;
-    private List<Connection> connections = Arrays.asList(new Connection[NUMBER_OF_CONNECTIONS]);
+    private final List<Connection> connections = Arrays.asList(new Connection[NUMBER_OF_CONNECTIONS]);
 
 
     public Connection getConnection(int connectionNumber) {

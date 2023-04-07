@@ -4,8 +4,8 @@ import com.nagarro.remotelearning.model.Drawable;
 
 public class Line implements Drawable {
 
-    private Point startCoordinate;
-    private Point endCoordinate;
+    private final Point startCoordinate;
+    private final Point endCoordinate;
 
     public Line(Point startCoordinate, Point endCoordinate) {
         this.startCoordinate = startCoordinate;

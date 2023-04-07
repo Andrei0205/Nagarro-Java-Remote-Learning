@@ -1,10 +1,10 @@
 package com.nagarro.remotelearning.model;
 
 public class Person {
-    private String firstName;
-    private String lastName;
-    private String dob;
-    private String dod;
+    private final String firstName;
+    private final String lastName;
+    private final String dob;
+    private final String dod;
 
     public Person(String firstName, String lastName, String dob, String dod) {
         this.firstName = firstName;
@@ -30,11 +30,7 @@ public class Person {
             return false;
         }
         Person person = (Person) o;
-        if (this.firstName.equals(person.firstName) && this.lastName.equals(person.lastName)) {
-            return true;
-        } else {
-            return false;
-        }
+        return this.firstName.equals(person.firstName) && this.lastName.equals(person.lastName);
 
     }
     @Override

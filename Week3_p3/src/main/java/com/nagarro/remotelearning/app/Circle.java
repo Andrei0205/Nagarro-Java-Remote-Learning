@@ -3,8 +3,8 @@ package com.nagarro.remotelearning.app;
 import com.nagarro.remotelearning.model.Drawable;
 
 public class Circle implements Drawable {
-    private Point centerPoint;
-    private Point pointOfTheCircle;
+    private final Point centerPoint;
+    private final Point pointOfTheCircle;
     private Line radius;
 
     public Circle(Point centerPoint, Point pointOfTheCircle) {
