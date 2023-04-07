@@ -12,7 +12,7 @@ public class SentenceCreator {
     private static final List<String> PREPOSITIONS = new ArrayList<>(Arrays.asList("to", "from", "over", "under", "on"));
     private static final String BLANK_SPACE = " ";
     private static final String PERIOD = ".";
-    private Random random = new Random();
+    private final Random random = new Random();
 
     public List<String> createSentences(int numberOfSentences) {
         List<String> sentences = new ArrayList<>();
@@ -23,21 +23,18 @@ public class SentenceCreator {
     }
 
     private String createOneSentence() {
-        StringBuilder sentence = new StringBuilder();
-        sentence.append(capitalizeFirstLetter(getRandomWordFrom(ARTICLES)));
-        sentence.append(getRandomWordFrom(NOUNS)).append(BLANK_SPACE);
-        sentence.append(getRandomWordFrom(VERBS)).append(BLANK_SPACE);
-        sentence.append(getRandomWordFrom(PREPOSITIONS)).append(BLANK_SPACE);
-        sentence.append(getRandomWordFrom(ARTICLES)).append(BLANK_SPACE);
-        sentence.append(getRandomWordFrom(NOUNS));
-        sentence.append(PERIOD);
-        return sentence.toString();
+        String sentence = capitalizeFirstLetter(getRandomWordFrom(ARTICLES)) +
+                getRandomWordFrom(NOUNS) + BLANK_SPACE +
+                getRandomWordFrom(VERBS) + BLANK_SPACE +
+                getRandomWordFrom(PREPOSITIONS) + BLANK_SPACE +
+                getRandomWordFrom(ARTICLES) + BLANK_SPACE +
+                getRandomWordFrom(NOUNS) +
+                PERIOD;
+        return sentence;
     }
 
     private String capitalizeFirstLetter(String string) {
-        StringBuilder stringBuilder = new StringBuilder();
-        stringBuilder.append(Character.toUpperCase(string.charAt(0))).append(string.substring(1)).append(BLANK_SPACE);
-        return stringBuilder.toString();
+        return Character.toUpperCase(string.charAt(0)) + string.substring(1) + BLANK_SPACE;
     }
 
     private String getRandomWordFrom(List<String> list) {

@@ -7,8 +7,8 @@ import java.util.List;
 public class Person {
     private static final int SURNAME_INDEX = 0;
     private int startIndex = 0;
-    private String surname;
-    private List<String> firstname = new ArrayList<>();
+    private final String surname;
+    private final List<String> firstname = new ArrayList<>();
 
     public Person(String surname, String firstname) {
         this.surname = surname;

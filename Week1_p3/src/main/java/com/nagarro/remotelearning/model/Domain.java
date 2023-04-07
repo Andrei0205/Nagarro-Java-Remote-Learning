@@ -1,9 +1,9 @@
 package com.nagarro.remotelearning.model;
 
 public class Domain {
-    private String name;
-    private String ownerDetails;
-    private String hosts;
+    private final String name;
+    private final String ownerDetails;
+    private final String hosts;
 
     public Domain(String name, String ownerDetails, String hosts) {
         this.name = name;

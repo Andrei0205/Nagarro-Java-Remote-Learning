@@ -11,7 +11,7 @@ import java.util.List;
 
 public class EngineFactory {
 
-    private EmployeeService employeeService;
+    private final EmployeeService employeeService;
 
     public EngineFactory(EmployeeService employeeService) {
         this.employeeService = employeeService;

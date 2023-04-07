@@ -14,9 +14,9 @@ public class MyListTest {
 
     private IList<String> list;
 
-    private Class<CustomListException> exceptionType = CustomListException.class;
+    private final Class<CustomListException> exceptionType = CustomListException.class;
 
-    private String[] initData = {"12", "23", "34", "45"};
+    private final String[] initData = {"12", "23", "34", "45"};
 
     @Rule
     public ExpectedException exception = ExpectedException.none();

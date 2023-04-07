@@ -1,14 +1,14 @@
 package com.nagarro.remotelearning.app;
 
 public class Parent {
-    private static int i = initializeInt(1);
-    private static int j = initializeInt(10);
+    private static final int i = initializeInt(1);
+    private static final int j = initializeInt(10);
 
-    private static int y;
+    private static final int y;
 
-    private String b = initializeString("Parent");
+    private final String b = initializeString("Parent");
 
-    private String c;
+    private final String c;
 
     static {
         y = 2;

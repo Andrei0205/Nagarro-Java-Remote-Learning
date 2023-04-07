@@ -35,9 +35,18 @@
         <module>Week7_p2</module>
         <module>Week7_p3</module>
         <module>Week7_p4</module>
+        <module>Week8_p1</module>
+        <module>Week8_p2</module>
+        <module>Week8_p3</module>
+        <module>Week9_p1</module>
+        <module>Week9_p2</module>
+        <module>Week9_p3</module>
         <module>Week10_p1</module>
         <module>Week10_p2</module>
         <module>Week10_p3</module>
+        <module>Week11_p1</module>
+        <module>Week11_p2</module>
+        <module>Week11_p3</module>
     </modules>
 
     <properties>

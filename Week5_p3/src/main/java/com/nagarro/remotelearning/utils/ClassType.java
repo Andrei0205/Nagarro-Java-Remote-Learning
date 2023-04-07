@@ -4,7 +4,7 @@ public enum ClassType {
     INITIAL(""),
     RELOADED("com.nagarro.remotelearning.utils.MyClass"),
     SUBCLASS("com.nagarro.remotelearning.utils.SubClass");
-    private String classType;
+    private final String classType;
 
     ClassType(String classType) {
         this.classType = classType;
