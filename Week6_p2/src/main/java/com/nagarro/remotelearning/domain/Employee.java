@@ -3,7 +3,7 @@ package com.nagarro.remotelearning.domain;
 
 public class Employee {
 
-    private String name;
+    private final String name;
 
     public Employee(String name) {
         this.name = name;

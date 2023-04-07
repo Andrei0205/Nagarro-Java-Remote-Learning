@@ -3,7 +3,7 @@ package com.nagarro.remotelearning.app;
 import com.nagarro.remotelearning.model.Domain;
 
 public class Reseller {
-    private Registrar registrar;
+    private final Registrar registrar;
 
     public Reseller(Registrar registrar) {
         this.registrar = registrar;

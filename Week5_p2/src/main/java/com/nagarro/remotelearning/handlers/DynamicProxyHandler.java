@@ -7,7 +7,7 @@ import java.lang.reflect.Method;
 import java.util.Arrays;
 
 public class DynamicProxyHandler implements InvocationHandler {
-    private Object proxied;
+    private final Object proxied;
 
     public DynamicProxyHandler(Object proxied) {
         this.proxied = proxied;

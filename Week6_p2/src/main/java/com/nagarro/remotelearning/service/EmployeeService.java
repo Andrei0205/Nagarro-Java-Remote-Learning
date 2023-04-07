@@ -13,7 +13,7 @@ public interface EmployeeService {
      * @param employee the employee to check
      * @return true is the employee is an assembly line worker, false otherwise
      */
-    public boolean isAssemblyLineWorker(Employee employee);
+    boolean isAssemblyLineWorker(Employee employee);
 
     /**
      * Determines if a given employee is an administrator.
@@ -21,5 +21,5 @@ public interface EmployeeService {
      * @param employee the employee to check
      * @return true is the employee is an administrator, false otherwise
      */
-    public boolean isAdministrator(Employee employee);
+    boolean isAdministrator(Employee employee);
 }

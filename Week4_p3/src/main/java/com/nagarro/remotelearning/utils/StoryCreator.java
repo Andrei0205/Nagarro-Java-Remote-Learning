@@ -4,8 +4,8 @@ import java.util.List;
 import java.util.Random;
 
 public class StoryCreator {
-    private Random random = new Random();
-    private SentenceCreator sentenceCreator = new SentenceCreator();
+    private final Random random = new Random();
+    private final SentenceCreator sentenceCreator = new SentenceCreator();
 
     public String createStory(int numberOfSentences) {
         List<String> sentences = sentenceCreator.createSentences(numberOfSentences);

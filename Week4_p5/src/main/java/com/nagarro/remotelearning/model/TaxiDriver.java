@@ -6,7 +6,7 @@ import com.nagarro.remotelearning.model.Person;
 
 public class TaxiDriver implements Person, Driver {
 
-    private String name;
+    private final String name;
 
     public TaxiDriver(String name) {
         this.name = name;

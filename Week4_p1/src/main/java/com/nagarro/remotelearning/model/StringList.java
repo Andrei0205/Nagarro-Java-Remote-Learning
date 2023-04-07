@@ -10,7 +10,7 @@ public class StringList implements IList<String> {
     private int arraySize = 20;
     private Integer[] values = new Integer[arraySize];
     private int index = 0;
-    private List<String> recordOfOperations = new ArrayList<>();
+    private final List<String> recordOfOperations = new ArrayList<>();
 
     @Override
     public void add(String element) {
@@ -88,9 +88,7 @@ public class StringList implements IList<String> {
     }
 
     private void addRecord(String s) {
-        StringBuilder stringBuilder = new StringBuilder();
-        stringBuilder.append("called ").append(s);
-        recordOfOperations.add(stringBuilder.toString());
+        recordOfOperations.add("called " + s);
     }
 
 }

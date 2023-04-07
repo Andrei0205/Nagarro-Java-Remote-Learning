@@ -4,10 +4,10 @@ import com.nagarro.remotelearning.model.Drawable;
 
 
 public class Rectangle implements Drawable {
-    private Point A;
-    private Point B;
-    private Point C;
-    private Point D;
+    private final Point A;
+    private final Point B;
+    private final Point C;
+    private final Point D;
     private Line AB;
     private Line BC;
     private Line CD;

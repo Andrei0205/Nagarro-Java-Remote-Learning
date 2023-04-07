@@ -26,13 +26,13 @@ public class FactoryTest {
     private static final int NO_EXPECTED_ENGINES = 1;
     private static final int COMPONENTS_PER_ENGINE = 3;
     private EngineFactory engineFactory;
-    private List<EngineComponent> engineComponents = new ArrayList<>();
+    private final List<EngineComponent> engineComponents = new ArrayList<>();
 
     private Employee nonContainedEmployee;
-    private List<Employee> employees = new ArrayList<>();
-    private Class<UnauthorizedEmployeeException> unauthorizedEmployeeException = UnauthorizedEmployeeException.class;
-    private Class<UnqualifiedEmployeeException> unqualifiedEmployeeException = UnqualifiedEmployeeException.class;
-    private Class<InsufficientStockException> insufficientStockException = InsufficientStockException.class;
+    private final List<Employee> employees = new ArrayList<>();
+    private final Class<UnauthorizedEmployeeException> unauthorizedEmployeeException = UnauthorizedEmployeeException.class;
+    private final Class<UnqualifiedEmployeeException> unqualifiedEmployeeException = UnqualifiedEmployeeException.class;
+    private final Class<InsufficientStockException> insufficientStockException = InsufficientStockException.class;
 
     @Rule
     public ExpectedException expectedException = ExpectedException.none();

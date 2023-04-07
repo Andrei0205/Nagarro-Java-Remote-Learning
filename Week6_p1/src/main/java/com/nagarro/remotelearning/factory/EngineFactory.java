@@ -14,8 +14,8 @@ import java.util.List;
 public class EngineFactory {
 
     private static final int COMPONENTS_PER_ENGINE = 3;
-    private List<Employee> employees;
-    private List<EngineComponent> engineComponents;
+    private final List<Employee> employees;
+    private final List<EngineComponent> engineComponents;
 
     public EngineFactory(List<Employee> employees, List<EngineComponent> engineComponents) {
         this.employees = employees;

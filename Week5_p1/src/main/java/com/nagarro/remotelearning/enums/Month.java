@@ -13,7 +13,7 @@ public enum Month {
     OCTOBER(10),
     NOVEMBER(11),
     DECEMBER(12);
-    private int index;
+    private final int index;
 
     Month(int index) {
         this.index = index;

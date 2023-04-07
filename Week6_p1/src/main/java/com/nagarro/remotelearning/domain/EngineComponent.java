@@ -2,8 +2,8 @@ package com.nagarro.remotelearning.domain;
 
 public class EngineComponent {
     
-    private String name;
-    private double weight;
+    private final String name;
+    private final double weight;
 
     public EngineComponent(String name, double weight) {
         this.name = name;

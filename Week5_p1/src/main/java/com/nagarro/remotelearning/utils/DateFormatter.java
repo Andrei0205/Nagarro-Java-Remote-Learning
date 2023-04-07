@@ -11,11 +11,10 @@ public class DateFormatter {
         LocalDate localDate = LocalDate.parse(date, DateTimeFormatter.ofPattern("dd-MM-yyyy"));
         int dayOfWeekValue = localDate.getDayOfWeek().getValue();
         int monthValue = localDate.getMonth().getValue();
-        StringBuilder stringBuilder = new StringBuilder();
-        stringBuilder.append(Day.getDayAtIndex(dayOfWeekValue)).append(" ");
-        stringBuilder.append(Month.getMonthAtIndex(monthValue)).append(" ");
-        stringBuilder.append(localDate.getYear());
-        return stringBuilder.toString();
+        String stringBuilder = Day.getDayAtIndex(dayOfWeekValue) + " " +
+                Month.getMonthAtIndex(monthValue) + " " +
+                localDate.getYear();
+        return stringBuilder;
 
     }
 }

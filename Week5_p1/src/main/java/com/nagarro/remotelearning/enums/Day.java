@@ -9,7 +9,7 @@ public enum Day {
     SATURDAY(6),
     SUNDAY(7);
 
-    private int index;
+    private final int index;
 
     Day(int index) {
         this.index = index;

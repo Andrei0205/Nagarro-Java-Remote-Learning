@@ -6,7 +6,7 @@ public class Customer {
 
     private Domain domain = null;
 
-    private Reseller reseller;
+    private final Reseller reseller;
 
     public Customer(Reseller reseller) {
         this.reseller = reseller;

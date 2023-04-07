@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class Tank {
-    private List<Object> stack = new ArrayList<>();
+    private final List<Object> stack = new ArrayList<>();
 
     public void push() {
         stack.add(new Object());
