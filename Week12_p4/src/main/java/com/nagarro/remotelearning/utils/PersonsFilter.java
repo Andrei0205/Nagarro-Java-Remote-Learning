@@ -12,33 +12,30 @@ public class PersonsFilter {
     private static final int AGE_INDEX = 0;
     private static final int NAME_INDEX = 1;
 
-    public Stream<Person> getPersonsOlderThan(List<String> persons, int age) {
-        List<Person> splitPersons = splitListIntoPersons(persons);
-        return splitPersons.stream().filter(p -> p.getAge() > age);
+    public Stream<Person> getPersonsOlderThan(List<Person> persons, int age) {
+        return persons.stream().filter(person -> person.getAge() > age);
     }
 
-    public Person getOldestPerson(List<String> persons) {
-        List<Person> splitPersons = splitListIntoPersons(persons);
-        Optional<Person> oldestPerson = splitPersons.stream().reduce((a, b) -> a.getAge() > b.getAge() ? a : b);
-        return oldestPerson.orElseThrow(NoSuchElementException::new);
+    public Optional<Person> getOldestPerson(List<Person> persons) {
+        return persons.stream().reduce((firstPerson, secondPerson) ->
+                firstPerson.getAge() > secondPerson.getAge() ? firstPerson : secondPerson);
     }
 
-    public String checkIfPersonsAreYoungerThan(List<String> persons, int age) {
-        List<Person> splitPersons = splitListIntoPersons(persons);
-        if (splitPersons.stream().allMatch(a -> a.getAge() < age)) {
+    public String checkIfPersonsAreYoungerThan(List<Person> persons, int age) {
+        if (persons.stream().allMatch(person -> person.getAge() < age)) {
             return "Yes";
         } else {
             return "No";
         }
     }
 
-    public Map<Integer, List<String>> groupByAge(List<String> persons) {
-        Stream<Person> personStream = splitListIntoPersons(persons).stream();
+    public Map<Integer, List<String>> groupByAge(List<Person> persons) {
+        Stream<Person> personStream = persons.stream();
         return personStream.collect(Collectors
                 .groupingBy(Person::getAge, Collectors.mapping(Person::getName, Collectors.toList())));
     }
 
-    private List<Person> splitListIntoPersons(List<String> initialList) {
+    public List<Person> splitListIntoPersons(List<String> initialList) {
         List<Person> splitList = new ArrayList<>();
         for (String pers : initialList) {
             String[] dates = pers.split(REGEX);
