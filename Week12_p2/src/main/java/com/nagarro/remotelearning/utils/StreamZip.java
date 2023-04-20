@@ -8,11 +8,10 @@ public class StreamZip {
         Iterator<T> secondIterator = second.iterator();
         Stream.Builder<T> streamBuilder = Stream.builder();
         first.forEach((element) -> {
-                    if(secondIterator.hasNext()){
+                    if (secondIterator.hasNext()) {
                         streamBuilder.accept(element);
                         streamBuilder.accept(secondIterator.next());
-                    }
-                    else {
+                    } else {
                         first.close();
                     }
                 }
