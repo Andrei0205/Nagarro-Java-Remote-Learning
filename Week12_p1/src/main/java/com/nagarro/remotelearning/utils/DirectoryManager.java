@@ -9,7 +9,8 @@ public class DirectoryManager {
     public DirectoryManager(String path) {
         this.path = path;
     }
-    public File[] getSubdirectories(){
+
+    public File[] getSubdirectories() {
         File file = getFileFromPath(path);
         return file.listFiles(new FileFilter() {
             @Override
@@ -18,19 +19,21 @@ public class DirectoryManager {
             }
         });
     }
+
     public File[] getSubdirectoriesWithLambda() {
         File file = getFileFromPath(path);
         return file.listFiles(dir -> dir.isDirectory());
     }
+
     public File[] getSubdirectoriesWithMethodReference() {
         File file = getFileFromPath(path);
         return file.listFiles(File::isDirectory);
     }
 
     private File getFileFromPath(String path) {
-        try{
+        try {
             return new File(path);
-        } catch (NullPointerException e){
+        } catch (NullPointerException e) {
             throw new RuntimeException(e);
         }
     }
