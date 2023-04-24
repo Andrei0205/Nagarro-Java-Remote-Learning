@@ -29,7 +29,8 @@ public class EventManager {
     }
 
     public List<Event> getEventsOnSpecificDateAndZone(LocalDate date, ZoneId zoneId) {
-        List<Event> eventsOnRequiredDate = events.stream().filter(event ->
+        List<Event> copyList = new ArrayList<>(events);
+        List<Event> eventsOnRequiredDate = copyList.stream().filter(event ->
                         event.getStartDate().toLocalDate().isEqual(date) &&
                                 event.getEndDate().toLocalDate().isEqual(date))
                 .collect(Collectors.toList());

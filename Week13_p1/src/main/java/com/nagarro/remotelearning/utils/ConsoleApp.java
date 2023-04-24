@@ -1,17 +1,19 @@
 package com.nagarro.remotelearning.utils;
 
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.util.Optional;
-import java.util.Scanner;
 
 public class ConsoleApp {
     private EventManager eventManager = new EventManager();
-    private Scanner console = new Scanner(System.in);
+    private BufferedReader bufferRead = new BufferedReader(new InputStreamReader(System.in));
 
-    public void start() {
+    public void start() throws IOException {
         while (true) {
             System.out.println("App runing");
             System.out.println("Enter " +
@@ -19,7 +21,7 @@ public class ConsoleApp {
                     "2 - List events taking place next weekend " +
                     "3 - Lists all events taking place on specific date with your time zone " +
                     "4 - List events taking place in a specific date time interval ");
-            int option = console.nextInt();
+            int option = Integer.parseInt(bufferRead.readLine());
             switch (option) {
                 case 1:
                     consoleAddEvent();
@@ -40,39 +42,39 @@ public class ConsoleApp {
         }
     }
 
-    private void consoleListEventsInASpecificInterval() {
+    private void consoleListEventsInASpecificInterval() throws IOException {
         System.out.println("Enter an event with following pattern: ");
         System.out.println("Start date : yyyy-MM-dd HH:mm");
-        String startDateString = console.nextLine();
+        String startDateString = bufferRead.readLine();
         System.out.println("End date : yyyy-MM-dd HH:mm");
-        String endDateString = console.nextLine();
+        String endDateString = bufferRead.readLine();
         DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
         LocalDateTime startDate = LocalDateTime.parse(startDateString, dateTimeFormatter);
         LocalDateTime endDate = LocalDateTime.parse(endDateString, dateTimeFormatter);
         System.out.println(eventManager.getEventsOnSpecificInterval(startDate, endDate));
     }
 
-    private void consoleListEventsOnSpecificDateAndTimeZone() {
+    private void consoleListEventsOnSpecificDateAndTimeZone() throws IOException {
         System.out.println("Enter a date with following pattern: yyyy-MM-dd");
-        String dateString = console.nextLine();
+        String dateString = bufferRead.readLine();
         System.out.println("Enter zone id:  Ex: Europe/Brussels");
-        String zoneId = console.nextLine();
+        String zoneId = bufferRead.readLine();
         DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
         LocalDate date = LocalDate.parse(dateString, dateFormatter);
         System.out.println(eventManager.getEventsOnSpecificDateAndZone(date, ZoneId.of(zoneId)));
     }
 
-    private void consoleAddEvent() {
+    private void consoleAddEvent() throws IOException {
 
         System.out.println("Enter an event with following pattern:");
         System.out.println("Start date : yyyy-MM-dd HH:mm");
-        String startDateString = console.nextLine();
+        String startDateString = bufferRead.readLine();
         System.out.println("End date : yyyy-MM-dd HH:mm");
-        String endDateString = console.nextLine();
+        String endDateString = bufferRead.readLine();
         System.out.println("Description ");
-        String description = console.nextLine();
+        String description = bufferRead.readLine();
         System.out.println("Location ");
-        Optional<String> location = Optional.ofNullable(console.nextLine());
+        Optional<String> location = Optional.ofNullable(bufferRead.readLine());
         DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
         LocalDateTime startDate = LocalDateTime.parse(startDateString, dateTimeFormatter);
         LocalDateTime endDate = LocalDateTime.parse(endDateString, dateTimeFormatter);
@@ -80,3 +82,11 @@ public class ConsoleApp {
     }
 
 }
+
+/*
+ 2023-04-29 10:20
+ 2023-04-29 23:40
+
+ 2023-04-29 08:00
+ 2023-04-30 09:00
+ */
