@@ -1,6 +1,6 @@
 package com.nagarro.remotelearning.main;
 
-import com.nagarro.remotelearning.utils.ConsoleApp;
+import com.nagarro.remotelearning.inteface.ConsoleApp;
 
 import java.io.IOException;
 

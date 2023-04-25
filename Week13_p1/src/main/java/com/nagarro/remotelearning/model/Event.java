@@ -1,4 +1,4 @@
-package com.nagarro.remotelearning.utils;
+package com.nagarro.remotelearning.model;
 
 import java.time.LocalDateTime;
 import java.util.Objects;
@@ -8,13 +8,16 @@ public class Event {
     private LocalDateTime startDate;
     private LocalDateTime endDate;
     private final String summary;
-    private final Optional<String> location;
+    private final String location; //default = "n/a" 2 constructors
 
-    public Event(LocalDateTime startDate, LocalDateTime endDate, String summary, Optional<String> location) {
+    public Event(LocalDateTime startDate, LocalDateTime endDate, String summary, String location) {
         this.startDate = startDate;
         this.endDate = endDate;
         this.summary = summary;
         this.location = location;
+    }
+    public Event(LocalDateTime startDate, LocalDateTime endDate, String summary) {
+        this(startDate,endDate,summary,"n/a");
     }
 
     public void setStartDate(LocalDateTime startDate) {

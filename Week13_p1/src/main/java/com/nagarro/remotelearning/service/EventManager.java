@@ -1,4 +1,6 @@
-package com.nagarro.remotelearning.utils;
+package com.nagarro.remotelearning.service;
+
+import com.nagarro.remotelearning.model.Event;
 
 import java.time.*;
 import java.time.temporal.TemporalAdjusters;
@@ -11,11 +13,11 @@ import java.util.stream.Collectors;
 public class EventManager {
     private final List<Event> events = new ArrayList<>();
 
-    public boolean addEvent(LocalDateTime startDate, LocalDateTime endDate, String summary, Optional<String> location) {
+    public boolean addEvent(LocalDateTime startDate, LocalDateTime endDate, String summary, String location) {
         if (endDate.isAfter(startDate)) {
             return events.add(new Event(startDate, endDate, summary, location));
         }
-        return false;
+        throw new UnsupportedOperationException("End Date must be after Start Date");
     }
 
     public List<Event> getEventsFromNextWeekend() {
@@ -29,17 +31,12 @@ public class EventManager {
     }
 
     public List<Event> getEventsOnSpecificDateAndZone(LocalDate date, ZoneId zoneId) {
-        List<Event> copyList = new ArrayList<>(events);
-        List<Event> eventsOnRequiredDate = copyList.stream().filter(event ->
+        return events.stream().filter(event ->
                         event.getStartDate().toLocalDate().isEqual(date) &&
-                                event.getEndDate().toLocalDate().isEqual(date))
-                .collect(Collectors.toList());
-        for (Event event : eventsOnRequiredDate) {
-            event.setStartDate(adaptDate(event.getStartDate(), zoneId));
-            event.setEndDate(adaptDate(event.getEndDate(), zoneId));
-        }
-        return eventsOnRequiredDate;
-        //.map(event -> event.setStartDate((event.getStartDate().atZone(zoneId)).toLocalDateTime()))
+                                event.getEndDate().toLocalDate().isEqual(date)).
+                peek(event -> event.setStartDate(adaptDateToZoneId(event.getStartDate(), zoneId))).
+                peek(event -> event.setEndDate(adaptDateToZoneId(event.getEndDate(), zoneId))).
+                collect(Collectors.toList());
     }
 
     public List<Event> getEventsOnSpecificInterval(LocalDateTime startDate, LocalDateTime endDate) {
@@ -48,9 +45,9 @@ public class EventManager {
                         event.getEndDate().isBefore(endDate)).collect(Collectors.toList());
     }
 
-    private LocalDateTime adaptDate(LocalDateTime localDateTime, ZoneId zoneId) {
-        ZonedDateTime defaultDate = ZonedDateTime.of(localDateTime, ZoneId.of("Europe/Bucharest"));
-        ZonedDateTime adaptedZoneDate = defaultDate.withZoneSameInstant(zoneId);
+    private LocalDateTime adaptDateToZoneId(LocalDateTime localDateTime, ZoneId zoneId) {
+        ZonedDateTime localDateWithDefaultTimeZone = ZonedDateTime.of(localDateTime, ZoneId.systemDefault());
+        ZonedDateTime adaptedZoneDate = localDateWithDefaultTimeZone.withZoneSameInstant(zoneId);
         return adaptedZoneDate.toLocalDateTime();
     }
 }
