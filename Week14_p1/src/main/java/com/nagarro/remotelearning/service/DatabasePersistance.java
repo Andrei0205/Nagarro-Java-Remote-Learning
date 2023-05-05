@@ -1,83 +1,153 @@
-//package com.nagarro.remotelearning.service;
-//
-//import com.nagarro.remotelearning.annotations.Table;
-//
-//import java.lang.annotation.*;
-//import java.lang.reflect.*;
-//import java.util.*;
-//
-//public class DatabasePersistance {
-//
-//    public void create(String modelClasses) throws ClassNotFoundException {
-//
-//        for (String className : modelClasses) {
-//
-//            Class<?> modelClass = Class.forName(className);
-//            String tableName = getTableName(className, modelClass);
-//            if (tableName == null) continue;
-//            List<String> columnDefs = new ArrayList<>();
-//            for (Field field : modelClass.getDeclaredFields()) {
-//                String columnName;
-//                Annotation[] anns = field.getDeclaredAnnotations();
-//                if (anns.length < 1) {
-//                    continue; // Not a db table column
-//                }
-//                if (anns[0] instanceof SQLInteger) {
-//                    SQLInteger sInt = (SQLInteger) anns[0];
-//// Use field name if name not specified
-//                    if (sInt.name().length() < 1)
-//                        columnName = field.getName().toUpperCase();
-//                    else
-//                        columnName = sInt.name();
-//                    columnDefs.add(columnName + " INT" +
-//                            getConstraints(sInt.constraints()));
-//                }
-//                if (anns[0] instanceof SQLString) {
-//                    SQLString sString = (SQLString) anns[0];
-//// Use field name if name not specified.
-//                    if (sString.name().length() < 1)
-//                        columnName = field.getName().toUpperCase();
-//                    else
-//                        columnName = sString.name();
-//                    columnDefs.add(columnName + " VARCHAR(" +
-//                            sString.value() + ")" +
-//                            getConstraints(sString.constraints()));
-//                }
-//                StringBuilder createCommand = new StringBuilder(
-//                        "CREATE TABLE " + tableName + "(");
-//                for (String columnDef : columnDefs)
-//                    createCommand.append("\n " + columnDef + ",");
-//// Remove trailing comma
-//                String tableCreate = createCommand.substring(
-//                        0, createCommand.length() - 1) + ");";
-//                System.out.println("Table Creation SQL for " +
-//                        className + " is :\n" + tableCreate);
-//            }
-//        }
-//    }
-//
-//    private String getTableName(String className, Class<?> modelClass) {
-//        Table dbTable = modelClass.getAnnotation(Table.class);
-//        if (dbTable == null) {
-//            System.out.println(
-//                    "No DBTable annotations in class " + className);
-//            return null;
-//        }
-//        String tableName = dbTable.name();
-//
-//        if (tableName.length() < 1)
-//            tableName = modelClass.getName().toUpperCase();
-//        return tableName;
-//    }
-//
-//    private String getConstraints(Constraints con) {
-//        String constraints = "";
-//        if (!con.allowNull())
-//            constraints += " NOT NULL";
-//        if (con.primaryKey())
-//            constraints += " PRIMARY KEY";
-//        if (con.unique())
-//            constraints += " UNIQUE";
-//        return constraints;
-//    }
-//}
+package com.nagarro.remotelearning.service;
+
+import com.nagarro.remotelearning.annotations.Column;
+import com.nagarro.remotelearning.annotations.Table;
+
+import java.lang.annotation.*;
+import java.lang.reflect.*;
+import java.util.*;
+
+public class DatabasePersistance {
+
+
+    public void addEntity(Object entity) throws IllegalAccessException {
+        // INSERT INTO Customers (CustomerName, City, Country)
+        //VALUES ('Cardinal', 'Stavanger', 'Norway');
+
+        Class<?> entityClass = entity.getClass();
+        String tableName;
+        List<String> columns;
+        List<String> values;
+        try {
+            tableName = getTableName(entityClass);
+            columns = getColumnsNames(entityClass);
+        } catch (NoSuchElementException e) {
+            System.out.println(e.getLocalizedMessage());
+            return;
+        }
+
+        values = getColumnsValues(entityClass, entity);
+
+        System.out.println(createSQLInsertCommand(tableName, columns, values));
+
+    }
+
+
+    public String createSQLString(String modelClassName) {
+        //todo return check
+        Class<?> modelClass;
+        try {
+            modelClass = Class.forName(modelClassName);
+        } catch (ClassNotFoundException e) {
+            System.out.println("Class not found");
+            return null;
+        }
+        String tableName;
+        List<String> columnDefinitions;
+        try {
+            tableName = getTableName(modelClass);
+            columnDefinitions = getColumnsDefinitions(modelClass);
+        } catch (NoSuchElementException e) {
+            System.out.println(e.getLocalizedMessage());
+            return null;
+        }
+        return buildSQLCreateCommand(tableName, columnDefinitions);
+    }
+    private  String createSQLInsertCommand(String tableName, List<String> columns, List<String> values) {
+        StringBuilder insertCommand = new StringBuilder();
+        insertCommand.append("INSERT INTO ").append(tableName).append(" (");
+        for (String column : columns) {
+            insertCommand.append(column).append(",");
+        }
+        insertCommand.deleteCharAt(insertCommand.length() - 1);
+        insertCommand.append(" )").append("\n ");
+        insertCommand.append("VALUES ").append("(");
+        for (String value : values) {
+            insertCommand.append("'").append(value).append("'").append(",");
+        }
+        insertCommand.deleteCharAt(insertCommand.length() - 1);
+        insertCommand.append(" )").append(";");
+        return insertCommand.toString();
+    }
+
+    private List<String> getColumnsValues(Class<?> entityClass, Object entity) throws IllegalAccessException {
+        List<String> values = new ArrayList<>();
+        for (Field field : entityClass.getDeclaredFields()) {
+            if (field.isAnnotationPresent(Column.class)) {
+                field.setAccessible(true);
+                Object value = field.get(entity);
+                values.add(value.toString());
+            }
+        }
+        return values;
+    }
+
+    private String buildSQLCreateCommand(String tableName, List<String> columnDefinitions) {
+        StringBuilder createCommand = new StringBuilder();
+        createCommand.append("CREATE TABLE ").append(tableName).append(" (");
+        for (String columnDef : columnDefinitions) {
+            createCommand.append("\n ").append(columnDef);
+        }
+        createCommand.deleteCharAt(createCommand.length() - 1);
+        createCommand.append(");");
+        return createCommand.toString();
+    }
+
+    private List<String> getColumnsDefinitions(Class<?> modelClass) {
+        List<String> columnDefs = new ArrayList<>();
+        for (Field field : modelClass.getDeclaredFields()) {
+            Column columnAnnotation = field.getAnnotation(Column.class);
+            if (columnAnnotation != null) {
+                StringBuilder columnDefinition = new StringBuilder();
+                columnDefinition.append(columnAnnotation.name()).append(" ");
+                columnDefinition.append(columnAnnotation.type()).append(" ");
+                columnDefinition.append(getConstraintsFromColumnAnnotation(columnAnnotation));
+                columnDefinition.append(",");
+                columnDefs.add(columnDefinition.toString());
+            }
+        }
+        if (columnDefs.isEmpty()) {
+            throw new NoSuchElementException("Table has no column defined");
+        }
+        return columnDefs;
+    }
+    private List<String> getColumnsNames(Class<?> modelClass) {
+        List<String> columnNames = new ArrayList<>();
+        for (Field field : modelClass.getDeclaredFields()) {
+            Column columnAnnotation = field.getAnnotation(Column.class);
+            if (columnAnnotation != null) {
+                columnNames.add(columnAnnotation.name());
+            }
+        }
+        if (columnNames.isEmpty()) {
+            throw new NoSuchElementException("Table has no column defined");
+        }
+        return columnNames;
+    }
+
+
+    private String getTableName(Class<?> modelClass) {
+        Table dbTable = modelClass.getAnnotation(Table.class);
+        if (dbTable == null) {
+            throw new NoSuchElementException("Your model class does not contain any table");
+        }
+        return dbTable.name();
+    }
+
+    private String getConstraintsFromColumnAnnotation(Column annotation) {
+        StringBuilder constraints = new StringBuilder();
+        if (!annotation.allowNull()) {
+            constraints.append("NOT NULL ");
+        }
+        if (annotation.primaryKey()) {
+            constraints.append("PRIMARY KEY ");
+        }
+        if (annotation.unique()) {
+            constraints.append("UNIQUE ");
+        }
+        if (constraints.length() == 0) {
+            return "";
+        }
+        return constraints.toString();
+    }
+}
