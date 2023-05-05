@@ -7,11 +7,16 @@ import java.lang.annotation.*;
 @Target(ElementType.FIELD)
 @Retention(RetentionPolicy.RUNTIME)
 public @interface Column {
-    public String name() default "";
+    @NotNull
+    String name();
 
     @NotNull
-    public String type();
+    String type();
 
-    public Constraints constraints() default @Constraints;
+    boolean primaryKey() default false;
+
+    boolean allowNull() default true;
+
+    boolean unique() default false;
 
 }

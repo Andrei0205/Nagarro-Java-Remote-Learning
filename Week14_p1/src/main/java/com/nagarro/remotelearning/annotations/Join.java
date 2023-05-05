@@ -4,9 +4,12 @@ import com.sun.istack.internal.NotNull;
 
 import java.lang.annotation.*;
 
-@Target(ElementType.TYPE)
+@Target(ElementType.FIELD)
 @Retention(RetentionPolicy.RUNTIME)
-public @interface Table {
+public @interface Join {
     @NotNull
-    public String name() default "";
+    String tableToJoin();
+
+    @NotNull
+    String joinByColumn();
 }
