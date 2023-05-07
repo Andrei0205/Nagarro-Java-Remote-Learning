@@ -1,19 +1,35 @@
 package com.nagarro.remotelearning.service;
 
 import com.nagarro.remotelearning.annotations.Column;
+import com.nagarro.remotelearning.annotations.Join;
 import com.nagarro.remotelearning.annotations.Table;
 
-import java.lang.annotation.*;
 import java.lang.reflect.*;
+import java.sql.Connection;
+import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.*;
 
-public class DatabasePersistance {
+public class DatabasePersistence {
+    private ConnectionManager connectionManager = new ConnectionManager();
 
+    public void createTable(String modelClassName) {
+        try (Connection connection = connectionManager.getMyConnection();
+             Statement statement = connection.createStatement();
+        ) {
+            String createCommand;
+            if (getSQLCreateCommandString(modelClassName) != null) {
+                createCommand = getSQLCreateCommandString(modelClassName);
+            } else {
+                throw new NoSuchElementException("Class not found or not contain any table definition");
+            }
+            statement.executeUpdate(createCommand);
+        } catch (SQLException | NoSuchElementException e) {
+            System.out.println(e.getLocalizedMessage());
+        }
+    }
 
-    public void addEntity(Object entity) throws IllegalAccessException {
-        // INSERT INTO Customers (CustomerName, City, Country)
-        //VALUES ('Cardinal', 'Stavanger', 'Norway');
-
+    public void addEntity(Object entity) {
         Class<?> entityClass = entity.getClass();
         String tableName;
         List<String> columns;
@@ -25,15 +41,35 @@ public class DatabasePersistance {
             System.out.println(e.getLocalizedMessage());
             return;
         }
+        values = getColumnsValues(entity);
+        try (Connection connection = connectionManager.getMyConnection();
+             Statement statement = connection.createStatement();
+        ) {
+            String insertCommand = getSQLInsertCommand(tableName, columns, values);
+            statement.executeUpdate(insertCommand);
+        } catch (SQLException e) {
+            System.out.println(e.getLocalizedMessage());
+        }
+    }
+    public void selectAll(Class<?> modelClass){
+//        SELECT student.name, employee.DepartmentID, address.street,address.city
+//        FROM student
+//        Join address
+//        WHERE student.address_id = address.id;
 
-        values = getColumnsValues(entityClass, entity);
-
-        System.out.println(createSQLInsertCommand(tableName, columns, values));
-
+        String tableName;
+        List<String> columns;
+        try {
+            tableName = getTableName(modelClass);
+            columns = getColumnsNames(modelClass);
+        } catch (NoSuchElementException e) {
+            System.out.println(e.getLocalizedMessage());
+            return;
+        }
     }
 
 
-    public String createSQLString(String modelClassName) {
+    private String getSQLCreateCommandString(String modelClassName) {
         //todo return check
         Class<?> modelClass;
         try {
@@ -53,7 +89,8 @@ public class DatabasePersistance {
         }
         return buildSQLCreateCommand(tableName, columnDefinitions);
     }
-    private  String createSQLInsertCommand(String tableName, List<String> columns, List<String> values) {
+
+    private String getSQLInsertCommand(String tableName, List<String> columns, List<String> values) {
         StringBuilder insertCommand = new StringBuilder();
         insertCommand.append("INSERT INTO ").append(tableName).append(" (");
         for (String column : columns) {
@@ -70,13 +107,18 @@ public class DatabasePersistance {
         return insertCommand.toString();
     }
 
-    private List<String> getColumnsValues(Class<?> entityClass, Object entity) throws IllegalAccessException {
+    private List<String> getColumnsValues(Object entity) {
+        Class<?> entityClass = entity.getClass();
         List<String> values = new ArrayList<>();
         for (Field field : entityClass.getDeclaredFields()) {
             if (field.isAnnotationPresent(Column.class)) {
                 field.setAccessible(true);
-                Object value = field.get(entity);
-                values.add(value.toString());
+                try {
+                    Object value = field.get(entity);
+                    values.add(value.toString());
+                } catch (IllegalAccessException e) {
+                    System.out.println(e.getLocalizedMessage());
+                }
             }
         }
         return values;
@@ -84,7 +126,7 @@ public class DatabasePersistance {
 
     private String buildSQLCreateCommand(String tableName, List<String> columnDefinitions) {
         StringBuilder createCommand = new StringBuilder();
-        createCommand.append("CREATE TABLE ").append(tableName).append(" (");
+        createCommand.append("CREATE TABLE IF NOT EXISTS ").append(tableName).append(" (");
         for (String columnDef : columnDefinitions) {
             createCommand.append("\n ").append(columnDef);
         }
@@ -111,12 +153,26 @@ public class DatabasePersistance {
         }
         return columnDefs;
     }
+
     private List<String> getColumnsNames(Class<?> modelClass) {
         List<String> columnNames = new ArrayList<>();
         for (Field field : modelClass.getDeclaredFields()) {
             Column columnAnnotation = field.getAnnotation(Column.class);
             if (columnAnnotation != null) {
                 columnNames.add(columnAnnotation.name());
+            }
+        }
+        if (columnNames.isEmpty()) {
+            throw new NoSuchElementException("Table has no column defined");
+        }
+        return columnNames;
+    }
+    private List<String> getReferenceColumnNames(Class<?> modelClass) {
+        List<String> columnNames = new ArrayList<>();
+        for (Field field : modelClass.getDeclaredFields()) {
+            Join joinAnnotation = field.getAnnotation(Join.class);
+            if (joinAnnotation != null) {
+                columnNames.add(joinAnnotation.tableToJoin());
             }
         }
         if (columnNames.isEmpty()) {

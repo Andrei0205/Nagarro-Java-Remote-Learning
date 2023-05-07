@@ -8,10 +8,7 @@ import java.time.LocalDate;
 
 @Table(name = "student")
 public class Student {
-    //database persistance - creare citire - generica
-    //ad id
-    //cand introduc un student ori adresa e salvata ori
-    //save + read student
+
     @Column(name = "id", type = "INT", primaryKey = true, allowNull = false)
     private int id;
 
@@ -21,15 +18,38 @@ public class Student {
     @Column(name = "cnp", type = "VARCHAR(13)", unique = true)
     private String cnp;
 
-    @Column(name = "gender", type = "VARCHAR(10)") // from cnp
+    @Column(name = "gender", type = "VARCHAR(10)")
     private Gender gender;
 
-    @Column(name = "birth_date", type = "DATE")
+    @Column(name = "birth_date", type = "VARCHAR(30)")
     private LocalDate dateOfBirth;
 
-    //join sql
-    //add one annotation
     @Join(tableToJoin = "adress", joinByColumn = "id")
     @Column(name = "address_id", type = "INT")
     private Address address;
+
+    public Student(int id, String name, String cnp, LocalDate dateOfBirth, Address address) {
+        this.id = id;
+        this.name = name;
+        this.cnp = cnp;
+        this.dateOfBirth = dateOfBirth;
+        this.address = address;
+        this.gender = calculateGender(cnp);
+    }
+
+    private Gender calculateGender(String cnp) {
+        int year = Integer.valueOf(cnp.charAt(1));
+        int gender = Integer.valueOf(cnp.charAt(0));
+        if (year == 0 || year == 1 || year == 2) {
+            if (gender == 5) {
+                return Gender.MALE;
+            }
+            return Gender.FEMALE;
+        } else {
+            if (gender == 1) {
+                return Gender.MALE;
+            }
+            return Gender.FEMALE;
+        }
+    }
 }
