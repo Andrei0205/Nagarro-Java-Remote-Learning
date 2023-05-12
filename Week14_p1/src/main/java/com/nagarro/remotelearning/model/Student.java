@@ -25,7 +25,6 @@ public class Student {
     private LocalDate dateOfBirth;
 
     @Join(tableToJoin = "address", joinByColumn = "id")
-    @Column(name = "address_id", type = "INT")
     private Address address;
 
     public Student(int id, String name, String cnp, LocalDate dateOfBirth, Address address) {
@@ -37,7 +36,7 @@ public class Student {
         this.gender = calculateGender(cnp);
     }
 
-    private Gender calculateGender(String cnp) {
+    private Gender calculateGender(String cnp) { //todo  separately
         char year = cnp.charAt(1);
         char gender = cnp.charAt(0);
         if (year == '0' || year == '1' || year == '2') {

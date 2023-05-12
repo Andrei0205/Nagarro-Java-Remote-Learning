@@ -12,4 +12,5 @@ public @interface Join {
 
     @NotNull
     String joinByColumn();
+
 }
