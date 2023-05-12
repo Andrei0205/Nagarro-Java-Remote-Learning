@@ -8,5 +8,5 @@ import java.lang.annotation.*;
 @Retention(RetentionPolicy.RUNTIME)
 public @interface Table {
     @NotNull
-    public String name() default "";
+    String name();
 }

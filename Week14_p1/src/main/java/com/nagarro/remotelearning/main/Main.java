@@ -7,13 +7,14 @@ import com.nagarro.remotelearning.service.DatabasePersistence;
 import java.time.LocalDate;
 
 public class Main {
-    public static void main(String[] args)  {
+    public static void main(String[] args) throws ClassNotFoundException {
         DatabasePersistence dbPers = new DatabasePersistence();
        // dbPers.createTable(Student.class);
-        Address address = new Address(10,"Severinului","34","Bucuresti","Romania");
+       // Address address = new Address(10,"Severinului","34","Bucuresti","Romania");
         //dbPers.addEntity(address);
+       dbPers.getSQLSelectCommand(Student.class);
         //dbPers.selectAll(Student.class);
-        dbPers.addEntity(new Student(1,"andrei","5010205160023", LocalDate.of(2001,02,05),address));
+        //dbPers.addEntity(new Student(2,"andrei","5010205160023", LocalDate.of(2001,02,05),address));
        // dbPers.selectAll(Student.class);
         //dbPers.getColumnsTypes(Student.class);
         //System.out.println(dbPers.getSQLCreateCommandString("com.nagarro.remotelearning.model.Address"));

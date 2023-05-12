@@ -5,7 +5,7 @@ import com.nagarro.remotelearning.annotations.Join;
 import com.nagarro.remotelearning.annotations.Table;
 import javafx.util.Pair;
 
-import java.lang.annotation.Annotation;
+
 import java.lang.reflect.*;
 import java.sql.Connection;
 import java.sql.ResultSet;
@@ -25,61 +25,26 @@ public class DatabasePersistence {
 
 
     public void addEntity(Object entity) {
-
         if (isJoinAnnotationPresent(entity)) {
             Object referenceEntity = getReferenceEntity(entity);
             String insertReferenceEntityCommand = getSQLInsertCommand(referenceEntity);
             String insertEntityCommand = getSQLInsertCommand(entity);
-            //executeTransactions(insertEntityCommand, insertReferenceEntityCommand);
-            System.out.println(insertReferenceEntityCommand);
-            System.out.println(insertEntityCommand);
+            executeTransactions(insertEntityCommand, insertReferenceEntityCommand);
+
         } else {
             String insertEntityCommand = getSQLInsertCommand(entity);
-            // executeStatement(insertEntityCommand);
+            executeStatement(insertEntityCommand);
         }
     }
 
 
-    public void selectAll(Class<?> modelClass) {
-        //WORKS ONLY FOR SIMPLE SELECT
-
-        //SELECT * FROM student
-        //    JOIN address
-        //    ON student.address.id = student.id;
-
-        //todo reformat with methods
-
-        String tableName;
-        List<String> columnsNames;
-        List<String> columnsTypes;
-        List<String> joinColumnsNames;
-        String selectCommand;
-
-        try {
-            tableName = getTableName(modelClass);
-            columnsNames = getColumnsNames(modelClass); // without join column
-            columnsTypes = getColumnsTypes(modelClass); // without join column
-        } catch (NoSuchElementException e) {
-            System.out.println(e.getLocalizedMessage());
-            return;
-        }
-        List<String> joinTableNames = getJoinTableNames(modelClass);
-        if (joinTableNames.isEmpty()) {
-            selectCommand = getSQLSelectCommand(tableName);
-        } else {
-            List<String> referenceColumnName = getReferenceColumnsNames(modelClass);
-            List<String> joinMatchingColumnName = getNamesForJoiningColumns(modelClass);
-            joinColumnsNames = getJoinColumnNames(modelClass);
-            selectCommand = getSQLSelectCommand(tableName, joinTableNames, referenceColumnName, joinMatchingColumnName);
-        }
+    public void selectAll(Class<?> modelClass) throws ClassNotFoundException {
+        String selectCommand = getSQLSelectCommand(modelClass);
 
         try (Connection connection = connectionManager.getMyConnection();
              Statement statement = connection.createStatement()) {
             ResultSet resultSet = statement.executeQuery(selectCommand);
-            Map<Integer, List<String>> results = formatResultSet(columnsNames, columnsTypes, resultSet);
-            for (Map.Entry mp : results.entrySet()) {               // ONLY FOR TESTING
-                System.out.println(mp.getValue().toString());
-            }
+            //Map<Integer, List<String>> results = formatResultSet(columnsNames, columnsTypes, resultSet);
         } catch (SQLException e) {
             System.out.println(e.getLocalizedMessage());
         }
@@ -105,6 +70,30 @@ public class DatabasePersistence {
             statement.executeUpdate(createCommand);
         } catch (SQLException e) {
             System.out.println(e.getLocalizedMessage());
+        }
+    }
+
+    private void executeTransactions(String insertEntityCommand, String insertReferenceEntityCommand) {
+        Connection connection = connectionManager.getMyConnection();
+        try (
+                Statement statement = connection.createStatement()
+        ) {
+            connection.setAutoCommit(false);
+            statement.executeUpdate(insertReferenceEntityCommand);
+
+            statement.executeUpdate(insertEntityCommand);
+            connection.commit();
+        } catch (SQLException e) {
+            if (connection != null) {
+                try {
+                    System.err.print("Transaction is being rolled back");
+                    connection.rollback();
+                    throw new RuntimeException(e);
+                } catch (SQLException excep) {
+                    throw new RuntimeException(excep);
+                }
+            }
+
         }
     }
 
@@ -146,10 +135,35 @@ public class DatabasePersistence {
         return selectCommand.toString();
     }
 
-    private String getSQLSelectCommand(String tableName) {
-        StringBuilder selectCommand = new StringBuilder();
-        selectCommand.append("SELECT * FROM ").append(tableName).append(";");
-        return selectCommand.toString();
+    public String getSQLSelectCommand(Class<?> modelClass) throws ClassNotFoundException {
+        //SELECT student.city, student.temp_lo, address.temp_hi,address.date
+        //    FROM student
+        //    JOIN address ON student.address_id = address.id;
+
+        String tableName = getTableName(modelClass);
+        if(isJoinAnnotationPresent(modelClass)) {
+            List<Pair<String,String>> columnTypesAndNames = getColumnsTypesAndNames(modelClass);
+            Class<?> joinClass = Class.forName(getReferenceClassName(modelClass));
+            List<Pair<String,String>> joinColumnTypesAndNames = getColumnsTypesAndNames(joinClass);
+            return null;
+        }
+        else {
+            StringBuilder selectCommand = new StringBuilder();
+            selectCommand.append("SELECT * FROM ").append(tableName).append(";");
+            return selectCommand.toString();
+        }
+
+//        List<String> joinColumnsNames;
+//
+//        List<String> joinTableNames = getJoinTableNames(modelClass);
+//        if (joinTableNames.isEmpty()) {
+//            selectCommand = getSQLSelectCommand(tableName);
+//        } else {
+//            List<String> referenceColumnName = getReferenceColumnsNames(modelClass);
+//            List<String> joinMatchingColumnName = getNamesForJoiningColumns(modelClass);
+//            joinColumnsNames = getJoinColumnsNames(modelClass);
+//            selectCommand = getSQLSelectCommand(tableName, joinTableNames, referenceColumnName, joinMatchingColumnName);
+//        }
     }
 
     private String getSQLCreateCommand(Class<?> modelClass) {
@@ -208,7 +222,7 @@ public class DatabasePersistence {
         ).map(field -> {
                     field.setAccessible(true);
                     try {
-                        Object value =  field.get(entity);
+                        Object value = field.get(entity);
                         return value.toString();
                     } catch (IllegalAccessException e) {
                         throw new RuntimeException(e);
@@ -244,7 +258,7 @@ public class DatabasePersistence {
         for (Field field : modelClass.getDeclaredFields()) { // with streams collect column and value
             //stream.filter.map(pair).collect
             Column columnAnnotation = field.getAnnotation(Column.class);
-            if (columnAnnotation != null && !field.isAnnotationPresent(Join.class)) {
+            if (columnAnnotation != null ) {
                 field.setAccessible(true);
                 Type fieldType = field.getType();
                 columnTypes.add(fieldType.getTypeName());
@@ -283,8 +297,9 @@ public class DatabasePersistence {
         List<String> referenceColumnNames = new ArrayList<>();
         for (Field field : modelClass.getDeclaredFields()) {
             if (field.isAnnotationPresent(Join.class)) {
-                Column columnAnnotation = field.getAnnotation(Column.class);
-                referenceColumnNames.add(columnAnnotation.name());
+                Join joinAnnotation = field.getAnnotation(Join.class);
+                String columnName = String.join("_", joinAnnotation.tableToJoin(), joinAnnotation.joinByColumn());
+                referenceColumnNames.add(columnName);
             }
         }
         return referenceColumnNames;
@@ -334,7 +349,7 @@ public class DatabasePersistence {
     private Object getReferenceEntity(Object entity) {
         Class<?> entityClass = entity.getClass();
 //        Field[] fields = entityClass.getDeclaredFields();
-//       return Arrays.stream(fields).filter(
+//       return Stream.of(fields).filter(
 //               field -> field.isAnnotationPresent(Column.class) && field.isAnnotationPresent(Join.class)
 //       ).map(field -> {
 //           field.setAccessible(true);
@@ -356,6 +371,21 @@ public class DatabasePersistence {
             }
         }
         throw new RuntimeException("not found");
+    }
+    private String getReferenceClassName(Class<?> entityClass) {
+        return Stream.of(entityClass.getDeclaredFields()).filter(
+                field -> field.isAnnotationPresent(Join.class)
+        ).map(field -> {
+            field.setAccessible(true);
+            return field.getType().getTypeName();
+        }).reduce("", String::concat);
+//        for (Field field : entityClass.getDeclaredFields()) {
+//            if (field.isAnnotationPresent(Join.class)) {
+//                field.setAccessible(true);
+//                return field.getType().getTypeName();
+//            }
+//        }
+//        throw new RuntimeException("not found");
     }
 
     /**
@@ -406,32 +436,47 @@ public class DatabasePersistence {
      * @throws NoSuchElementException if table has no column defined
      */
     private List<String> getColumnsNames(Class<?> modelClass) {
-        List<String> columnNames = new ArrayList<>();
-        for (Field field : modelClass.getDeclaredFields()) {
-            Column columnAnnotation = field.getAnnotation(Column.class);
-            if (columnAnnotation != null) {
-                columnNames.add(columnAnnotation.name());
-            }
+        List<String> columnNames = Stream.of(modelClass.getDeclaredFields()).filter(
+                field -> field.isAnnotationPresent(Column.class)
+        ).map(
+                field -> {
+                    Column columnAnnotation = field.getAnnotation(Column.class);
+                    return columnAnnotation.name();
+                }
+        ).collect(Collectors.toList());
+        if (columnNames.isEmpty()) {
+            throw new NoSuchElementException("Table has no column defined");
         }
+        return columnNames;
+    }
+     private List<Pair<String,String>> getColumnsTypesAndNames(Class<?> modelClass) {
+         List<Pair<String,String>> columnNames = Stream.of(modelClass.getDeclaredFields()).filter(
+                field -> field.isAnnotationPresent(Column.class)
+        ).map(
+                field -> {
+                    field.setAccessible(true);
+                    Column columnAnnotation = field.getAnnotation(Column.class);
+                    String fieldType = field.getType().getTypeName();
+                    String columnName = columnAnnotation.name();
+                    return new Pair<String,String>(fieldType,columnName);
+                }
+        ).collect(Collectors.toList());
         if (columnNames.isEmpty()) {
             throw new NoSuchElementException("Table has no column defined");
         }
         return columnNames;
     }
 
-    private List<String> getJoinColumnNames(Class<?> modelClass) {
+
+    private List<String> getJoinColumnsNames(Class<?> modelClass) throws ClassNotFoundException {
         List<String> columnNames = new ArrayList<>();
         for (Field field : modelClass.getDeclaredFields()) {
             Join joinAnnotation = field.getAnnotation(Join.class);
             if (joinAnnotation != null) {
                 field.setAccessible(true);
                 Type fieldType = field.getType();
-                try {
-                    Class<?> joinClass = Class.forName(fieldType.getTypeName());
-                    columnNames = getColumnsNames(joinClass);
-                } catch (ClassNotFoundException e) {
-                    System.out.println("Class not found");
-                }
+                Class<?> joinClass = Class.forName(fieldType.getTypeName());
+                columnNames = getColumnsNames(joinClass);
             }
         }
         return columnNames;
