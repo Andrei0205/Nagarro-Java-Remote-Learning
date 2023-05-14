@@ -3,12 +3,13 @@ package com.nagarro.remotelearning.model;
 import com.nagarro.remotelearning.annotations.Column;
 import com.nagarro.remotelearning.annotations.Join;
 import com.nagarro.remotelearning.annotations.Table;
+import com.nagarro.remotelearning.service.DataConverter;
 
 import java.time.LocalDate;
 
 @Table(name = "student")
 public class Student {
-
+    DataConverter dataConverter = new DataConverter();
     @Column(name = "id", type = "INT", primaryKey = true, allowNull = false)
     private int id;
 
@@ -33,22 +34,7 @@ public class Student {
         this.cnp = cnp;
         this.dateOfBirth = dateOfBirth;
         this.address = address;
-        this.gender = calculateGender(cnp);
+        this.gender = dataConverter.deduceGenderFromCNP(cnp);
     }
 
-    private Gender calculateGender(String cnp) { //todo  separately
-        char year = cnp.charAt(1);
-        char gender = cnp.charAt(0);
-        if (year == '0' || year == '1' || year == '2') {
-            if (gender == '5') {
-                return Gender.MALE;
-            }
-            return Gender.FEMALE;
-        } else {
-            if (gender == '1') {
-                return Gender.MALE;
-            }
-            return Gender.FEMALE;
-        }
-    }
 }
