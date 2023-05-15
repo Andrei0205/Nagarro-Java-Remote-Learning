@@ -9,12 +9,12 @@ import java.time.LocalDate;
 public class Main {
     public static void main(String[] args) throws ClassNotFoundException {
         DatabasePersistence dbPers = new DatabasePersistence();
-       // dbPers.createTable(Student.class);
-        //Address address = new Address(20,"Dacia","34","Craiova","Romania");
+        //dbPers.createTable(Student.class);
+        //Address address = new Address(4,"Enescu","44G","Ramnicu Valcea","Romania");
         //dbPers.addEntity(address);
 //       System.out.println(dbPers.getSQLSelectCommand(Address.class));
         dbPers.selectAll(Student.class);
-       // dbPers.addEntity(new Student(13,"marian","5010205160012", LocalDate.of(2000,07,07),address));
+       // dbPers.addEntity(new Student(2,"Paul","5010205168899", LocalDate.of(2010,02,15),address));
        // dbPers.selectAll(Student.class);
         //dbPers.getColumnsTypes(Student.class);
         //System.out.println(dbPers.getSQLCreateCommandString("com.nagarro.remotelearning.model.Address"));

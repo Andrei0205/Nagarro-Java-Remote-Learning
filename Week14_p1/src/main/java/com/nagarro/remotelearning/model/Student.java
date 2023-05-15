@@ -1,12 +1,14 @@
 package com.nagarro.remotelearning.model;
 
 import com.nagarro.remotelearning.annotations.Column;
+import com.nagarro.remotelearning.annotations.Converter;
 import com.nagarro.remotelearning.annotations.Join;
 import com.nagarro.remotelearning.annotations.Table;
 import com.nagarro.remotelearning.service.DataConverter;
 
 import java.time.LocalDate;
 
+@Converter(name = "convertToStudent")
 @Table(name = "student")
 public class Student {
     DataConverter dataConverter = new DataConverter();
@@ -35,6 +37,18 @@ public class Student {
         this.dateOfBirth = dateOfBirth;
         this.address = address;
         this.gender = dataConverter.deduceGenderFromCNP(cnp);
+    }
+
+    @Override
+    public String toString() {
+        return "Student{" +
+                "id=" + id +
+                ", name='" + name + '\'' +
+                ", cnp='" + cnp + '\'' +
+                ", gender=" + gender +
+                ", dateOfBirth=" + dateOfBirth +
+                ", address=" + address +
+                '}';
     }
 
 }

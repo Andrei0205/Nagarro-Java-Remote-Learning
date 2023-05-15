@@ -1,6 +1,7 @@
 package com.nagarro.remotelearning.service;
 
 import com.nagarro.remotelearning.annotations.Column;
+import com.nagarro.remotelearning.annotations.Converter;
 import com.nagarro.remotelearning.annotations.Join;
 import com.nagarro.remotelearning.annotations.Table;
 import com.nagarro.remotelearning.exceptions.ColumnException;
@@ -48,15 +49,33 @@ public class DatabasePersistence {
             List<Pair<String, String>> joinColumnTypesAndNames = getColumnsTypesAndNames(joinClass);
             columnTypesAndNames.addAll(joinColumnTypesAndNames);
         }
-
+        List<?> results;
         try (Connection connection = connectionManager.getMyConnection();
              Statement statement = connection.createStatement()) {
             ResultSet resultSet = statement.executeQuery(selectCommand);
-            Map<Integer, List<String>> results = formatResultSet(columnTypesAndNames, resultSet);
-            results.forEach((key, value) -> System.out.println(key + " : " + value));
-        } catch (SQLException e) {
-            System.out.println(e.getLocalizedMessage());
+            results = formatResultSet(resultSet, modelClass);
+        } catch (NoSuchMethodException | InstantiationException | IllegalAccessException | SQLException e) {
+            throw new DatabasePersistenceException(e.getLocalizedMessage());
         }
+        for (Object obj : results) {
+            System.out.println(obj);
+        }
+    }
+
+    private List<?> formatResultSet(ResultSet resultSet, Class<?> modelClass) throws SQLException, NoSuchMethodException, InstantiationException, IllegalAccessException {
+        String convertMethodName = modelClass.getAnnotation(Converter.class).name();
+        Class[] convertMethodArgument = {ResultSet.class};
+        Method convertMethod = DatabaseTypeConverter.class.getMethod(convertMethodName, convertMethodArgument);
+        Object databaseTypeConverter = DatabaseTypeConverter.class.newInstance();
+        List<Object> objectsFromDatabase = new ArrayList<>();
+        while (resultSet.next()) {
+            try {
+                objectsFromDatabase.add(convertMethod.invoke(databaseTypeConverter, resultSet));
+            } catch (IllegalAccessException | InvocationTargetException e) {
+                throw new DatabasePersistenceException(e.getLocalizedMessage());
+            }
+        }
+        return objectsFromDatabase;
     }
 
     private boolean isJoinAnnotationPresent(Object entity) {
@@ -78,7 +97,7 @@ public class DatabasePersistence {
         ) {
             statement.executeUpdate(createCommand);
         } catch (SQLException e) {
-            System.out.println(e.getLocalizedMessage());
+            throw new DatabasePersistenceException(e.getLocalizedMessage());
         }
     }
 
@@ -101,24 +120,6 @@ public class DatabasePersistence {
                 throw new DatabasePersistenceException(excep.getLocalizedMessage());
             }
         }
-    }
-
-    private Map<Integer, List<String>> formatResultSet(List<Pair<String, String>> columnTypesAndNames, ResultSet resultSet) throws SQLException {
-        Map<Integer, List<String>> results = new HashMap<>();
-        int mapIndex = 0;
-        while (resultSet.next()) {
-            List<String> rowResults = new ArrayList<>();
-            for (int index = 0; index < columnTypesAndNames.size(); index++) {
-                if (columnTypesAndNames.get(index).getKey().contains("int")) {
-                    rowResults.add(String.valueOf(resultSet.getInt(index + 1)));
-                } else {
-                    rowResults.add(resultSet.getString(index + 1));
-                }
-            }
-            results.put(mapIndex, rowResults);
-            mapIndex++;
-        }
-        return results;
     }
 
     private String buildSQLSelectCommand(String tableName, String joinTableName,
@@ -183,14 +184,11 @@ public class DatabasePersistence {
     }
 
     private String buildSQLCreateCommand(String tableName, List<String> columnDefinitions) {
-        StringBuilder createCommand = new StringBuilder();
-        createCommand.append("CREATE TABLE IF NOT EXISTS ").append(tableName).append(" (");
-        for (String columnDef : columnDefinitions) {
-            createCommand.append("\n ").append(columnDef);
-        }
-        createCommand.deleteCharAt(createCommand.length() - 1);
-        createCommand.append(");");
-        return createCommand.toString();
+        String createCommand = "CREATE TABLE IF NOT EXISTS tableName ( columnDefinitions );";
+        createCommand = createCommand.replace("tableName", tableName);
+        String columnDefinitionsString = String.join(" , ", columnDefinitions);
+        createCommand = createCommand.replace("columnDefinitions", columnDefinitionsString);
+        return createCommand;
     }
 
     private String getSQLInsertCommand(Object entity) {
@@ -205,21 +203,14 @@ public class DatabasePersistence {
     }
 
     private String buildSQLInsertCommand(String tableName, List<Pair<String, String>> columnsAndValues) {
-        StringBuilder insertCommand = new StringBuilder();
-        insertCommand.append("INSERT INTO ").append(tableName).append(" (");
-        for (Pair<String, String> column : columnsAndValues) {
-            insertCommand.append(column.getKey());
-            insertCommand.append(",");
-        }
-        insertCommand.deleteCharAt(insertCommand.length() - 1);
-        insertCommand.append(" )").append("\n ");
-        insertCommand.append("VALUES ").append("(");
-        for (Pair<String, String> value : columnsAndValues) {
-            insertCommand.append("'").append(value.getValue()).append("'").append(",");
-        }
-        insertCommand.deleteCharAt(insertCommand.length() - 1);
-        insertCommand.append(" )").append(";");
-        return insertCommand.toString();
+        String insertCommand = "INSERT INTO tableName ( columns ) VALUES ( values );";
+        insertCommand = insertCommand.replace("tableName", tableName);
+        String columns = columnsAndValues.stream().map(Pair::getKey).collect(Collectors.joining(","));
+        insertCommand = insertCommand.replace("columns", columns);
+        String values = columnsAndValues.stream().map(
+                pair -> "'" + pair.getValue() + "'").collect(Collectors.joining(","));
+        insertCommand = insertCommand.replace("values", values);
+        return insertCommand;
     }
 
     private List<Pair<String, String>> getColumnNamesAndValues(Object entity) {
@@ -272,46 +263,6 @@ public class DatabasePersistence {
     }
 
     /**
-     * Return a List of Strings with declared types of fields with @Column annotation
-     *
-     * @return List
-     * @throws NoSuchElementException if class has no field with @Column annotation
-     */
-    private List<String> getColumnsTypes(Class<?> modelClass) {
-        List<String> columnTypes = new ArrayList<>();
-        for (Field field : modelClass.getDeclaredFields()) { // with streams collect column and value
-            //stream.filter.map(pair).collect
-            Column columnAnnotation = field.getAnnotation(Column.class);
-            if (columnAnnotation != null) {
-                field.setAccessible(true);
-                Type fieldType = field.getType();
-                columnTypes.add(fieldType.getTypeName());
-            }
-        }
-        if (columnTypes.isEmpty()) {
-            throw new ColumnException("Table has no column defined");
-        }
-        return columnTypes;
-    }
-
-    /**
-     * Return a List of Strings with columns that match with reference fields declared in current class,
-     * columns that you need for join condition
-     *
-     * @return List
-     */
-    private List<String> getMatchingColumnsNames(Class<?> modelClass) {
-        List<String> joinMatchingColumnNames = new ArrayList<>();
-        for (Field field : modelClass.getDeclaredFields()) {
-            Join joinAnnotation = field.getAnnotation(Join.class);
-            if (joinAnnotation != null) {
-                joinMatchingColumnNames.add(joinAnnotation.joinByColumn());
-            }
-        }
-        return joinMatchingColumnNames;
-    }
-
-    /**
      * Return a list of Strings with all fields that have @Join annotation
      *
      * @return List
@@ -343,34 +294,9 @@ public class DatabasePersistence {
         ).findFirst().orElseThrow(() -> new RuntimeException("No field with Join annotation found"));
     }
 
-    /**
-     * Return a list of Strings with values contained by every
-     * field that have only @Column annotation
-     *
-     * @return List
-     * @throws NoSuchElementException if table has no column defined
-     */
-    private List<String> getColumnsValues(Object entity) {
-        Class<?> entityClass = entity.getClass();
-        List<String> values = new ArrayList<>();
-        for (Field field : entityClass.getDeclaredFields()) {
-            if (field.isAnnotationPresent(Column.class)) {
-                field.setAccessible(true);
-                try {
-                    Object value = field.get(entity);
-                    values.add(value.toString());
-                } catch (IllegalAccessException e) {
-                    System.out.println(e.getLocalizedMessage());
-                }
-            }
-        }
-        return values;
-    }
-
     private Object getReferenceEntity(Object entity) {
         Class<?> entityClass = entity.getClass();
-        Field[] fields = entityClass.getDeclaredFields();
-        return Stream.of(fields).filter(
+        return Stream.of(entityClass.getDeclaredFields()).filter(
                 field -> field.isAnnotationPresent(Join.class)
         ).map(field -> {
             field.setAccessible(true);
@@ -393,45 +319,40 @@ public class DatabasePersistence {
 
     /**
      * Return a list with definitions for every field that have @Column annotation
-     * Example of a column definition 'id INTEGER PRIMARY KEY NOT NULL,'
+     * Example of a column definition 'id INTEGER PRIMARY KEY NOT NULL'
      *
      * @return List
      * @throws NoSuchElementException if table has no column defined
      */
     private List<String> getColumnsDefinitions(Class<?> modelClass) {
-        List<String> columnDefs = new ArrayList<>();
-        for (Field field : modelClass.getDeclaredFields()) {
-            Column columnAnnotation = field.getAnnotation(Column.class);
-            if (columnAnnotation != null) {
-                StringBuilder columnDefinition = new StringBuilder();
-                columnDefinition.append(columnAnnotation.name()).append(" ");
-                columnDefinition.append(columnAnnotation.type()).append(" ");
-                columnDefinition.append(getConstraintsFromColumnAnnotation(columnAnnotation));
-                columnDefinition.append(",");
-                columnDefs.add(columnDefinition.toString());
-            }
-        }
+        List<String> columnDefs = Stream.of(modelClass.getDeclaredFields()).filter(
+                field -> field.isAnnotationPresent(Column.class)
+        ).map(
+                field -> {
+                    Column columnAnnotation = field.getAnnotation(Column.class);
+                    String columnDefinition = columnAnnotation.name() + " " + columnAnnotation.type() + " "
+                            + getConstraintsFromColumnAnnotation(columnAnnotation);
+                    return columnDefinition;
+                }
+        ).collect(Collectors.toList());
         if (columnDefs.isEmpty()) {
-            throw new NoSuchElementException("Table has no column defined");
+            throw new ColumnException("Table has no column defined");
         }
         return columnDefs;
     }
 
     private List<String> getJoinColumnDefinition(Class<?> modelClass) {
-        List<String> columnDefs = new ArrayList<>();
-        for (Field field : modelClass.getDeclaredFields()) {
-            Join joinAnnotation = field.getAnnotation(Join.class);
-            if (joinAnnotation != null) {
-                StringBuilder columnDefinition = new StringBuilder();
-                columnDefinition.append(joinAnnotation.tableToJoin()).append("_");
-                columnDefinition.append(joinAnnotation.joinByColumn()).append(" ");
-                columnDefinition.append("INTEGER ");
-                columnDefinition.append("NOT NULL");
-                columnDefinition.append(",");
-                columnDefs.add(columnDefinition.toString());
-            }
-        }
-        return columnDefs;
+        return Stream.of(modelClass.getDeclaredFields()).filter(
+                field -> field.isAnnotationPresent(Join.class)
+        ).map(
+                field -> {
+                    Join joinAnnotation = field.getAnnotation(Join.class);
+                    String columnDefinition =
+                            String.join("_", joinAnnotation.tableToJoin(), joinAnnotation.joinByColumn())
+                                    + "INTEGER" + "NOT NULL";
+                    return columnDefinition;
+                }
+        ).collect(Collectors.toList());
     }
 
     /**
@@ -467,20 +388,6 @@ public class DatabasePersistence {
         ).collect(Collectors.toList());
         if (columnNames.isEmpty()) {
             throw new NoSuchElementException("Table has no column defined");
-        }
-        return columnNames;
-    }
-
-    private List<String> getJoinColumnsNames(Class<?> modelClass) throws ClassNotFoundException {
-        List<String> columnNames = new ArrayList<>();
-        for (Field field : modelClass.getDeclaredFields()) {
-            Join joinAnnotation = field.getAnnotation(Join.class);
-            if (joinAnnotation != null) {
-                field.setAccessible(true);
-                Type fieldType = field.getType();
-                Class<?> joinClass = Class.forName(fieldType.getTypeName());
-                columnNames = getColumnsNames(joinClass);
-            }
         }
         return columnNames;
     }
