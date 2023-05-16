@@ -8,19 +8,19 @@ import com.nagarro.remotelearning.annotations.Table;
 @Table(name = "address")
 public class Address {
     @Column(name = "id", type = "INTEGER", primaryKey = true, allowNull = false)
-    private int id;
+    private final int id;
 
     @Column(name = "street", type = "VARCHAR(255)")
-    private String street;
+    private final String street;
 
     @Column(name = "number", type = "VARCHAR(20)")
-    private String number;
+    private final String number;
 
     @Column(name = "city", type = "VARCHAR(55)")
-    private String city;
+    private final String city;
 
     @Column(name = "country", type = "VARCHAR(55)")
-    private String country;
+    private final String country;
 
     public Address(int id, String street, String number, String city, String country) {
         this.id = id;

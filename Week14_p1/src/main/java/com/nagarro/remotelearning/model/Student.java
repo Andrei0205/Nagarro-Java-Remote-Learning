@@ -13,22 +13,22 @@ import java.time.LocalDate;
 public class Student {
     DataConverter dataConverter = new DataConverter();
     @Column(name = "id", type = "INT", primaryKey = true, allowNull = false)
-    private int id;
+    private final int id;
 
     @Column(name = "name", type = "VARCHAR(55)")
-    private String name;
+    private final String name;
 
     @Column(name = "cnp", type = "VARCHAR(13)", unique = true)
-    private String cnp;
+    private final String cnp;
 
     @Column(name = "gender", type = "VARCHAR(10)")
-    private Gender gender;
+    private final Gender gender;
 
     @Column(name = "birth_date", type = "VARCHAR(30)")
-    private LocalDate dateOfBirth;
+    private final LocalDate dateOfBirth;
 
     @Join(tableToJoin = "address", joinByColumn = "id")
-    private Address address;
+    private final Address address;
 
     public Student(int id, String name, String cnp, LocalDate dateOfBirth, Address address) {
         this.id = id;

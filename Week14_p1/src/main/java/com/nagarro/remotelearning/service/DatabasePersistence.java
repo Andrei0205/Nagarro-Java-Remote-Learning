@@ -43,12 +43,6 @@ public class DatabasePersistence {
 
     public void selectAll(Class<?> modelClass) throws ClassNotFoundException {
         String selectCommand = getSQLSelectCommand(modelClass);
-        List<Pair<String, String>> columnTypesAndNames = getColumnsTypesAndNames(modelClass);
-        if (isJoinAnnotationPresent(modelClass)) {
-            Class<?> joinClass = Class.forName(getReferenceClass(modelClass));
-            List<Pair<String, String>> joinColumnTypesAndNames = getColumnsTypesAndNames(joinClass);
-            columnTypesAndNames.addAll(joinColumnTypesAndNames);
-        }
         List<?> results;
         try (Connection connection = connectionManager.getMyConnection();
              Statement statement = connection.createStatement()) {
@@ -57,7 +51,7 @@ public class DatabasePersistence {
         } catch (NoSuchMethodException | InstantiationException | IllegalAccessException | SQLException e) {
             throw new DatabasePersistenceException(e.getLocalizedMessage());
         }
-        for (Object obj : results) {
+        for (Object obj : results) { //ONLY FOR TESTING
             System.out.println(obj);
         }
     }
@@ -80,14 +74,12 @@ public class DatabasePersistence {
 
     private boolean isJoinAnnotationPresent(Object entity) {
         Class<?> entityClass = entity.getClass();
-        Field[] fields = entityClass.getDeclaredFields();
-        return Stream.of(fields).anyMatch(
+        return Stream.of(entityClass.getDeclaredFields()).anyMatch(
                 field -> field.isAnnotationPresent(Join.class));
     }
 
     private boolean isJoinAnnotationPresent(Class<?> entityClass) {
-        Field[] fields = entityClass.getDeclaredFields();
-        return Stream.of(fields).anyMatch(
+        return Stream.of(entityClass.getDeclaredFields()).anyMatch(
                 field -> field.isAnnotationPresent(Join.class));
     }
 
@@ -126,24 +118,19 @@ public class DatabasePersistence {
                                          List<Pair<String, String>> columnTypesAndNames,
                                          List<Pair<String, String>> joinColumnTypesAndNames,
                                          Pair<String, String> referenceColumnAndHisMatching) {
-        StringBuilder selectCommand = new StringBuilder();
-        selectCommand.append("SELECT ");
-        for (Pair<String, String> column : columnTypesAndNames) {
-            selectCommand.append(String.join(".", tableName, column.getValue()));
-            selectCommand.append(",");
-        }
-        for (Pair<String, String> joinColumn : joinColumnTypesAndNames) {
-            selectCommand.append(String.join(".", joinTableName, joinColumn.getValue()));
-            selectCommand.append(",");
-        }
-        selectCommand.deleteCharAt(selectCommand.length() - 1);
-        selectCommand.append("\n").append("FROM ").append(tableName);
-        selectCommand.append("\n").append("JOIN ").append(joinTableName);
-        selectCommand.append("\n").append("ON ");
-        selectCommand.append(tableName).append(".").append(referenceColumnAndHisMatching.getKey()).append(" = ");
-        selectCommand.append(joinTableName).append(".").append(referenceColumnAndHisMatching.getValue());
-        selectCommand.append(";");
-        return selectCommand.toString();
+        String selectCommand = "SELECT tables.columns FROM tableName " +
+                "JOIN joinTableName " +
+                "ON tableName.referenceColumn = joinTableName.matchingColumn";
+        String columns = columnTypesAndNames.stream().map(pair -> tableName + "." + pair.getValue())
+                .collect(Collectors.joining(" , "));
+        String joinColumns = joinColumnTypesAndNames.stream().map(pair -> joinTableName + "." + pair.getValue()).
+                collect(Collectors.joining(" , "));
+        selectCommand = selectCommand.replace("tables.columns", String.join(" , ", columns, joinColumns));
+        selectCommand = selectCommand.replace("tableName", tableName);
+        selectCommand = selectCommand.replace("joinTableName", joinTableName);
+        selectCommand = selectCommand.replace("referenceColumn", referenceColumnAndHisMatching.getKey());
+        selectCommand = selectCommand.replace("matchingColumn", referenceColumnAndHisMatching.getValue());
+        return selectCommand;
     }
 
     private String getSQLSelectCommand(Class<?> modelClass) throws ClassNotFoundException {
@@ -171,7 +158,7 @@ public class DatabasePersistence {
                     String matchingColumn = joinAnnotation.joinByColumn();
                     return new Pair<>(columnName, matchingColumn);
                 }
-        ).findFirst().orElseThrow(() -> new RuntimeException("No field with Join annotation found"));
+        ).findFirst().orElseThrow(() -> new JoinColumnException("No field with Join annotation found"));
     }
 
     private String getSQLCreateCommand(Class<?> modelClass) {
@@ -225,7 +212,7 @@ public class DatabasePersistence {
                     try {
                         columnValue = field.get(entity).toString();
                     } catch (IllegalAccessException e) {
-                        throw new RuntimeException(e);
+                        throw new DatabasePersistenceException(e.getLocalizedMessage());
                     }
                     return new Pair<>(columnName, columnValue);
                 }
@@ -239,7 +226,7 @@ public class DatabasePersistence {
         ).map(field -> {
             Join joinAnnotation = field.getAnnotation(Join.class);
             return joinAnnotation.joinByColumn();
-        }).findFirst().orElseThrow(() -> new RuntimeException("No field with Join annotation found"));
+        }).findFirst().orElseThrow(() -> new JoinColumnException("No field with Join annotation found"));
         return getValueForSpecificColumn(getReferenceEntity(entity), columnName);
     }
 
@@ -274,7 +261,7 @@ public class DatabasePersistence {
             Join joinAnnotation = field.getAnnotation(Join.class);
             String columnName = String.join("_", joinAnnotation.tableToJoin(), joinAnnotation.joinByColumn());
             return columnName;
-        }).findFirst().orElseThrow(() -> new RuntimeException("No field with Join annotation found"));
+        }).findFirst().orElseThrow(() -> new JoinColumnException("No field with Join annotation found"));
 
     }
 
@@ -291,7 +278,7 @@ public class DatabasePersistence {
                     Join joinAnnotation = field.getAnnotation(Join.class);
                     return joinAnnotation.tableToJoin();
                 }
-        ).findFirst().orElseThrow(() -> new RuntimeException("No field with Join annotation found"));
+        ).findFirst().orElseThrow(() -> new JoinColumnException("No field with Join annotation found"));
     }
 
     private Object getReferenceEntity(Object entity) {
@@ -355,25 +342,6 @@ public class DatabasePersistence {
         ).collect(Collectors.toList());
     }
 
-    /**
-     * @return List with names of columns that have only @Column annotation
-     * @throws NoSuchElementException if table has no column defined
-     */
-    private List<String> getColumnsNames(Class<?> modelClass) {
-        List<String> columnNames = Stream.of(modelClass.getDeclaredFields()).filter(
-                field -> field.isAnnotationPresent(Column.class)
-        ).map(
-                field -> {
-                    Column columnAnnotation = field.getAnnotation(Column.class);
-                    return columnAnnotation.name();
-                }
-        ).collect(Collectors.toList());
-        if (columnNames.isEmpty()) {
-            throw new NoSuchElementException("Table has no column defined");
-        }
-        return columnNames;
-    }
-
     private List<Pair<String, String>> getColumnsTypesAndNames(Class<?> modelClass) {
         List<Pair<String, String>> columnNames = Stream.of(modelClass.getDeclaredFields()).filter(
                 field -> field.isAnnotationPresent(Column.class)
@@ -387,7 +355,7 @@ public class DatabasePersistence {
                 }
         ).collect(Collectors.toList());
         if (columnNames.isEmpty()) {
-            throw new NoSuchElementException("Table has no column defined");
+            throw new ColumnException("Table has no column defined");
         }
         return columnNames;
     }
@@ -395,7 +363,7 @@ public class DatabasePersistence {
     private String getTableName(Class<?> modelClass) {
         Table dbTable = modelClass.getAnnotation(Table.class);
         if (dbTable == null) {
-            throw new RuntimeException("Your model class does not contain any table");
+            throw new DatabasePersistenceException("Your model class does not contain any table");
         }
         return dbTable.name();
     }
