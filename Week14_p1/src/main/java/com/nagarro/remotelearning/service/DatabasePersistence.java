@@ -1,7 +1,6 @@
 package com.nagarro.remotelearning.service;
 
 import com.nagarro.remotelearning.annotations.Column;
-import com.nagarro.remotelearning.annotations.Converter;
 import com.nagarro.remotelearning.annotations.Join;
 import com.nagarro.remotelearning.annotations.Table;
 import com.nagarro.remotelearning.exceptions.ColumnException;
@@ -29,7 +28,9 @@ public class DatabasePersistence {
 
 
     public void addEntity(Object entity) {
+        //insert recursiv
         if (isJoinAnnotationPresent(entity)) {
+            // addEntity(joinEntity);
             Object referenceEntity = getReferenceEntity(entity);
             String insertReferenceEntityCommand = getSQLInsertCommand(referenceEntity);
             String insertEntityCommand = getSQLInsertCommand(entity);
@@ -40,37 +41,86 @@ public class DatabasePersistence {
         }
     }
 
-
-    public void selectAll(Class<?> modelClass) throws ClassNotFoundException {
+    public void selectAll(Class<?> modelClass) throws ClassNotFoundException, SQLException, InstantiationException, IllegalAccessException, NoSuchMethodException {
         String selectCommand = getSQLSelectCommand(modelClass);
-        List<?> results;
+        List<Object> results = new ArrayList<>();
         try (Connection connection = connectionManager.getMyConnection();
              Statement statement = connection.createStatement()) {
             ResultSet resultSet = statement.executeQuery(selectCommand);
-            results = formatResultSet(resultSet, modelClass);
-        } catch (NoSuchMethodException | InstantiationException | IllegalAccessException | SQLException e) {
-            throw new DatabasePersistenceException(e.getLocalizedMessage());
+            while (resultSet.next()) {
+                results.add(extractObjectFromResultRow(resultSet, modelClass));
+            }
+        } catch (InvocationTargetException e) {
+            throw new RuntimeException(e);
         }
         for (Object obj : results) { //ONLY FOR TESTING
             System.out.println(obj);
         }
     }
 
-    private List<?> formatResultSet(ResultSet resultSet, Class<?> modelClass) throws SQLException, NoSuchMethodException, InstantiationException, IllegalAccessException {
-        String convertMethodName = modelClass.getAnnotation(Converter.class).name();
-        Class[] convertMethodArgument = {ResultSet.class};
-        Method convertMethod = DatabaseTypeConverter.class.getMethod(convertMethodName, convertMethodArgument);
-        Object databaseTypeConverter = DatabaseTypeConverter.class.newInstance();
-        List<Object> objectsFromDatabase = new ArrayList<>();
-        while (resultSet.next()) {
-            try {
-                objectsFromDatabase.add(convertMethod.invoke(databaseTypeConverter, resultSet));
-            } catch (IllegalAccessException | InvocationTargetException e) {
-                throw new DatabasePersistenceException(e.getLocalizedMessage());
+    private Object extractObjectFromResultRow(ResultSet resultSet, Class<?> modelClass) throws InstantiationException, IllegalAccessException, SQLException, NoSuchMethodException, InvocationTargetException, ClassNotFoundException {
+        Object obj = modelClass.newInstance();
+        List<Field> fields = Stream.of(modelClass.getDeclaredFields()).filter(
+                field -> field.isAnnotationPresent(Column.class) || field.isAnnotationPresent(Join.class)
+        ).collect(Collectors.toList());
+        for (int iterator = 0; iterator < fields.size(); iterator++) {
+            String fieldName = fields.get(iterator).getName();
+            Type fieldType = fields.get(iterator).getType();
+            String setterMethodName = "set" + capitalize(fieldName);
+            Method setterMethod = modelClass.getMethod(setterMethodName, (Class<?>) fieldType);
+            if (fields.get(iterator).isAnnotationPresent(Join.class)) {
+                Object joinObject = extractJoinObject(fields.get(iterator), iterator, resultSet);
+                setterMethod.invoke(obj, joinObject);
+            } else {
+                Object value = resultSet.getObject(iterator + 1);
+                setterMethod.invoke(obj, value);
             }
         }
-        return objectsFromDatabase;
+        return obj;
     }
+
+    private Object extractJoinObject(Field field, int index, ResultSet resultSet) throws ClassNotFoundException, NoSuchMethodException, SQLException, InstantiationException, IllegalAccessException, InvocationTargetException {
+        Class<?> modelClass = Class.forName(field.getType().getTypeName());
+        Object obj = modelClass.newInstance();
+        List<Field> fields = Stream.of(modelClass.getDeclaredFields()).filter(
+                myField -> myField.isAnnotationPresent(Column.class) || myField.isAnnotationPresent(Join.class)
+        ).collect(Collectors.toList());
+        for (Field innerFiled : fields) {
+            String fieldName = innerFiled.getName();
+            Type fieldType = innerFiled.getType();
+            String setterMethodName = "set" + capitalize(fieldName);
+            Method setterMethod = modelClass.getMethod(setterMethodName, (Class<?>) fieldType);
+            if (innerFiled.isAnnotationPresent(Join.class)) {
+                return extractJoinObject(innerFiled, index, resultSet);
+            }
+            Object value = resultSet.getObject(index + 1);
+            setterMethod.invoke(obj, value);
+            index++;
+        }
+        return obj;
+    }
+
+    private String capitalize(String str) {
+        return Character.toUpperCase(str.charAt(0)) + str.substring(1);
+    }
+
+    //private List<?> extractObjectFromResultSet(ResultSet resultSet, Class<?> modelClass) throws SQLException, NoSuchMethodException, InstantiationException, IllegalAccessException /{
+    // extractObjectFromResultRow(resultSet.row,modelClass) -> Object<T>
+//        String convertMethodName = modelClass.getAnnotation(Converter.class).name();
+//        Class[] convertMethodArgument = {ResultSet.class};
+//        Method convertMethod = DatabaseTypeConverter.class.getMethod(convertMethodName, convertMethodArgument);
+//        Object databaseTypeConverter = DatabaseTypeConverter.class.newInstance();
+//        List<Object> objectsFromDatabase = new ArrayList<>();
+//
+//        while (resultSet.next()) {
+//            try {
+//                objectsFromDatabase.add(convertMethod.invoke(databaseTypeConverter, resultSet));
+//            } catch (IllegalAccessException | InvocationTargetException e) {
+//                throw new DatabasePersistenceException(e.getLocalizedMessage());
+//            }
+//        }
+//        return objectsFromDatabase;
+    //}
 
     private boolean isJoinAnnotationPresent(Object entity) {
         Class<?> entityClass = entity.getClass();
@@ -123,8 +173,8 @@ public class DatabasePersistence {
                 "ON tableName.referenceColumn = joinTableName.matchingColumn";
         String columns = columnTypesAndNames.stream().map(pair -> tableName + "." + pair.getValue())
                 .collect(Collectors.joining(" , "));
-        String joinColumns = joinColumnTypesAndNames.stream().map(pair -> joinTableName + "." + pair.getValue()).
-                collect(Collectors.joining(" , "));
+        String joinColumns = joinColumnTypesAndNames.stream().map(pair -> joinTableName + "." + pair.getValue())
+                .collect(Collectors.joining(" , "));
         selectCommand = selectCommand.replace("tables.columns", String.join(" , ", columns, joinColumns));
         selectCommand = selectCommand.replace("tableName", tableName);
         selectCommand = selectCommand.replace("joinTableName", joinTableName);
@@ -262,7 +312,6 @@ public class DatabasePersistence {
             String columnName = String.join("_", joinAnnotation.tableToJoin(), joinAnnotation.joinByColumn());
             return columnName;
         }).findFirst().orElseThrow(() -> new JoinColumnException("No field with Join annotation found"));
-
     }
 
     /**

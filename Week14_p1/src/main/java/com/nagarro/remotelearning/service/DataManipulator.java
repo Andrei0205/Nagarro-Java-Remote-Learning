@@ -2,7 +2,7 @@ package com.nagarro.remotelearning.service;
 
 import com.nagarro.remotelearning.model.Gender;
 
-public class DataConverter {
+public class DataManipulator {
     public Gender deduceGenderFromCNP(String cnp) {
         char year = cnp.charAt(1);
         char gender = cnp.charAt(0);

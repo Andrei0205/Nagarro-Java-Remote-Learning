@@ -1,34 +1,33 @@
 package com.nagarro.remotelearning.model;
 
 import com.nagarro.remotelearning.annotations.Column;
-import com.nagarro.remotelearning.annotations.Converter;
 import com.nagarro.remotelearning.annotations.Join;
 import com.nagarro.remotelearning.annotations.Table;
-import com.nagarro.remotelearning.service.DataConverter;
+import com.nagarro.remotelearning.service.DataManipulator;
 
 import java.time.LocalDate;
 
-@Converter(name = "convertToStudent")
+
 @Table(name = "student")
 public class Student {
-    DataConverter dataConverter = new DataConverter();
+    private final DataManipulator dataManipulator = new DataManipulator();
     @Column(name = "id", type = "INT", primaryKey = true, allowNull = false)
-    private final int id;
+    private int id;
 
     @Column(name = "name", type = "VARCHAR(55)")
-    private final String name;
+    private String name;
 
     @Column(name = "cnp", type = "VARCHAR(13)", unique = true)
-    private final String cnp;
+    private String cnp;
 
     @Column(name = "gender", type = "VARCHAR(10)")
-    private final Gender gender;
+    private Gender gender;
 
     @Column(name = "birth_date", type = "VARCHAR(30)")
-    private final LocalDate dateOfBirth;
+    private LocalDate dateOfBirth;
 
     @Join(tableToJoin = "address", joinByColumn = "id")
-    private final Address address;
+    private Address address;
 
     public Student(int id, String name, String cnp, LocalDate dateOfBirth, Address address) {
         this.id = id;
@@ -36,7 +35,34 @@ public class Student {
         this.cnp = cnp;
         this.dateOfBirth = dateOfBirth;
         this.address = address;
-        this.gender = dataConverter.deduceGenderFromCNP(cnp);
+        this.gender = dataManipulator.deduceGenderFromCNP(cnp);
+    }
+
+    public Student() {
+    }
+
+    public void setId(int id) {
+        this.id = id;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public void setCnp(String cnp) {
+        this.cnp = cnp;
+    }
+
+    public void setGender(Gender gender) {
+        this.gender = gender;
+    }
+
+    public void setDateOfBirth(LocalDate dateOfBirth) {
+        this.dateOfBirth = dateOfBirth;
+    }
+
+    public void setAddress(Address address) {
+        this.address = address;
     }
 
     @Override
