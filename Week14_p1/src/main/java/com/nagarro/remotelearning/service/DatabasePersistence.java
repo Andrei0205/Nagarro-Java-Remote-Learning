@@ -2,6 +2,7 @@ package com.nagarro.remotelearning.service;
 
 import com.nagarro.remotelearning.annotations.Column;
 import com.nagarro.remotelearning.annotations.Join;
+import com.nagarro.remotelearning.annotations.MyConverter;
 import com.nagarro.remotelearning.annotations.Table;
 import com.nagarro.remotelearning.exceptions.ColumnException;
 import com.nagarro.remotelearning.exceptions.DatabasePersistenceException;
@@ -9,6 +10,7 @@ import com.nagarro.remotelearning.exceptions.JoinColumnException;
 import javafx.util.Pair;
 
 
+import java.lang.annotation.Annotation;
 import java.lang.reflect.*;
 import java.sql.Connection;
 import java.sql.ResultSet;
@@ -58,69 +60,66 @@ public class DatabasePersistence {
         }
     }
 
-    private Object extractObjectFromResultRow(ResultSet resultSet, Class<?> modelClass) throws InstantiationException, IllegalAccessException, SQLException, NoSuchMethodException, InvocationTargetException, ClassNotFoundException {
+    private Object extractObjectFromResultRow(ResultSet resultSet, Class<?> modelClass) throws InstantiationException, IllegalAccessException, SQLException, InvocationTargetException, ClassNotFoundException, NoSuchMethodException {
         Object obj = modelClass.newInstance();
-        List<Field> fields = Stream.of(modelClass.getDeclaredFields()).filter(
-                field -> field.isAnnotationPresent(Column.class) || field.isAnnotationPresent(Join.class)
-        ).collect(Collectors.toList());
-        for (int iterator = 0; iterator < fields.size(); iterator++) {
-            String fieldName = fields.get(iterator).getName();
-            Type fieldType = fields.get(iterator).getType();
-            String setterMethodName = "set" + capitalize(fieldName);
-            Method setterMethod = modelClass.getMethod(setterMethodName, (Class<?>) fieldType);
-            if (fields.get(iterator).isAnnotationPresent(Join.class)) {
-                Object joinObject = extractJoinObject(fields.get(iterator), iterator, resultSet);
+        List<Field> fields = getDBFields(modelClass.getDeclaredFields());
+        int iterator = 1;
+        for (Field field : fields) {
+            Method setterMethod = getSetterMethod(modelClass, field);
+            if (field.isAnnotationPresent(Join.class)) {
+                Object joinObject = extractJoinObject(field, iterator, resultSet);
                 setterMethod.invoke(obj, joinObject);
-            } else {
-                Object value = resultSet.getObject(iterator + 1);
-                setterMethod.invoke(obj, value);
+                iterator++;  //todo increase with no of fields in join object
+                continue;
             }
+            Object value = resultSet.getObject(iterator);
+            if (field.isAnnotationPresent(MyConverter.class)) {
+                value = convertObject(value, field);
+            }
+            setterMethod.invoke(obj, value);
+            iterator++;
         }
         return obj;
     }
 
-    private Object extractJoinObject(Field field, int index, ResultSet resultSet) throws ClassNotFoundException, NoSuchMethodException, SQLException, InstantiationException, IllegalAccessException, InvocationTargetException {
+    private Object extractJoinObject(Field field, int iterator, ResultSet resultSet) throws ClassNotFoundException, NoSuchMethodException, SQLException, InstantiationException, IllegalAccessException, InvocationTargetException {
         Class<?> modelClass = Class.forName(field.getType().getTypeName());
         Object obj = modelClass.newInstance();
-        List<Field> fields = Stream.of(modelClass.getDeclaredFields()).filter(
-                myField -> myField.isAnnotationPresent(Column.class) || myField.isAnnotationPresent(Join.class)
-        ).collect(Collectors.toList());
+        List<Field> fields = getDBFields(modelClass.getDeclaredFields());
         for (Field innerFiled : fields) {
-            String fieldName = innerFiled.getName();
-            Type fieldType = innerFiled.getType();
-            String setterMethodName = "set" + capitalize(fieldName);
-            Method setterMethod = modelClass.getMethod(setterMethodName, (Class<?>) fieldType);
+            Method setterMethod = getSetterMethod(modelClass, field);
             if (innerFiled.isAnnotationPresent(Join.class)) {
-                return extractJoinObject(innerFiled, index, resultSet);
+                return extractJoinObject(innerFiled, iterator, resultSet);
             }
-            Object value = resultSet.getObject(index + 1);
+            Object value = resultSet.getObject(iterator);
             setterMethod.invoke(obj, value);
-            index++;
+            iterator++;
         }
         return obj;
+    }
+
+    private List<Field> getDBFields(Field[] fields) {
+        return Stream.of(fields).filter(
+                myField -> myField.isAnnotationPresent(Column.class) || myField.isAnnotationPresent(Join.class)
+        ).collect(Collectors.toList());
+    }
+
+    private Method getSetterMethod(Class<?> modelClass, Field field) throws NoSuchMethodException {
+        String fieldName = field.getName();
+        Class<?> fieldType = field.getType();
+        String setterMethodName = "set" + capitalize(fieldName);
+        return modelClass.getMethod(setterMethodName, fieldType);
+    }
+
+    private Object convertObject(Object value, Field field) throws NoSuchMethodException, InvocationTargetException, IllegalAccessException, InstantiationException {
+        String methodName = field.getAnnotation(MyConverter.class).methodName();
+        Method convertMethod = AttributeConverter.class.getMethod(methodName, Object.class);
+        return convertMethod.invoke(AttributeConverter.class.newInstance(), value);
     }
 
     private String capitalize(String str) {
         return Character.toUpperCase(str.charAt(0)) + str.substring(1);
     }
-
-    //private List<?> extractObjectFromResultSet(ResultSet resultSet, Class<?> modelClass) throws SQLException, NoSuchMethodException, InstantiationException, IllegalAccessException /{
-    // extractObjectFromResultRow(resultSet.row,modelClass) -> Object<T>
-//        String convertMethodName = modelClass.getAnnotation(Converter.class).name();
-//        Class[] convertMethodArgument = {ResultSet.class};
-//        Method convertMethod = DatabaseTypeConverter.class.getMethod(convertMethodName, convertMethodArgument);
-//        Object databaseTypeConverter = DatabaseTypeConverter.class.newInstance();
-//        List<Object> objectsFromDatabase = new ArrayList<>();
-//
-//        while (resultSet.next()) {
-//            try {
-//                objectsFromDatabase.add(convertMethod.invoke(databaseTypeConverter, resultSet));
-//            } catch (IllegalAccessException | InvocationTargetException e) {
-//                throw new DatabasePersistenceException(e.getLocalizedMessage());
-//            }
-//        }
-//        return objectsFromDatabase;
-    //}
 
     private boolean isJoinAnnotationPresent(Object entity) {
         Class<?> entityClass = entity.getClass();

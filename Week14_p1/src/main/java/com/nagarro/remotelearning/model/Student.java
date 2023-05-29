@@ -2,6 +2,7 @@ package com.nagarro.remotelearning.model;
 
 import com.nagarro.remotelearning.annotations.Column;
 import com.nagarro.remotelearning.annotations.Join;
+import com.nagarro.remotelearning.annotations.MyConverter;
 import com.nagarro.remotelearning.annotations.Table;
 import com.nagarro.remotelearning.service.DataManipulator;
 
@@ -19,10 +20,10 @@ public class Student {
 
     @Column(name = "cnp", type = "VARCHAR(13)", unique = true)
     private String cnp;
-
+    @MyConverter(methodName = "convertStringToGender")
     @Column(name = "gender", type = "VARCHAR(10)")
     private Gender gender;
-
+    @MyConverter(methodName = "convertStringToLocalDate")
     @Column(name = "birth_date", type = "VARCHAR(30)")
     private LocalDate dateOfBirth;
 
