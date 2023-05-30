@@ -10,10 +10,10 @@ import java.time.LocalDate;
 public class Main {
     public static void main(String[] args) throws ClassNotFoundException, SQLException, InstantiationException, IllegalAccessException, NoSuchMethodException {
         DatabasePersistence dbPers = new DatabasePersistence();
-        //dbPers.createTable(Student.class);
-       // Address address = new Address(6,"Ispirescu","23A","Bucuresti","Romania");
-        dbPers.selectAll(Student.class);
-       // dbPers.addEntity(new Student(4,"Mihaela","6010205163219", LocalDate.of(2006,10,21),address));
+        //dbPers.createTable(Address.class);
+        Address address = new Address(78,"Ispirescu","23A","Bucuresti","Romania");
+        //dbPers.selectAll(Student.class);
+        dbPers.addEntity(new Student(122,"Mihaela","6010205163219", LocalDate.of(2006,10,21),address));
 
 
 
