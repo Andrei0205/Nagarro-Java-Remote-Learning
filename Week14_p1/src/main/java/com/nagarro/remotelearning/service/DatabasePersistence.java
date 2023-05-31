@@ -7,6 +7,7 @@ import com.nagarro.remotelearning.annotations.Table;
 import com.nagarro.remotelearning.exceptions.ColumnException;
 import com.nagarro.remotelearning.exceptions.DatabasePersistenceException;
 import com.nagarro.remotelearning.exceptions.JoinColumnException;
+import com.nagarro.remotelearning.model.Student;
 import javafx.util.Pair;
 
 
@@ -27,7 +28,6 @@ public class DatabasePersistence {
         executeStatement(createCommand);
     }
 
-
     public void addEntity(Object entity) {
         if (isJoinAnnotationPresent(entity)) {
             Object joinEntity = getJoinEntity(entity);
@@ -40,8 +40,21 @@ public class DatabasePersistence {
         }
     }
 
+    public void selectSpecificEntity(Class<?> modelClass, int id) throws SQLException, ClassNotFoundException, InstantiationException, IllegalAccessException, NoSuchMethodException {
+        String selectCommand = getSQLSelectCommand(modelClass, id);
+        try (Connection connection = connectionManager.getMyConnection();
+             Statement statement = connection.createStatement()) {
+            ResultSet resultSet = statement.executeQuery(selectCommand);
+            while (resultSet.next()) {
+                System.out.println(extractObjectFromResultRow(resultSet, modelClass));
+            }
+        } catch (InvocationTargetException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
     public void selectAll(Class<?> modelClass) throws ClassNotFoundException, SQLException, InstantiationException, IllegalAccessException, NoSuchMethodException {
-        String selectCommand = getSQLSelectCommand(modelClass);
+        String selectCommand = getSQLSelectAllCommand(modelClass);
         List<Object> results = new ArrayList<>();
         try (Connection connection = connectionManager.getMyConnection();
              Statement statement = connection.createStatement()) {
@@ -55,6 +68,10 @@ public class DatabasePersistence {
         for (Object obj : results) { //ONLY FOR TESTING
             System.out.println(obj);
         }
+    }
+
+    public void update(Class<?> modelClass,int id, String fieldToUpdate, String value) {
+
     }
 
     private Object extractObjectFromResultRow(ResultSet resultSet, Class<?> modelClass) throws SQLException, ClassNotFoundException, InvocationTargetException, InstantiationException, IllegalAccessException, NoSuchMethodException {
@@ -151,39 +168,63 @@ public class DatabasePersistence {
         }
     }
 
-    private String getSQLSelectCommand(Class<?> modelClass) throws ClassNotFoundException {
-        String tableName = getTableName(modelClass);
+    private String getSQLSelectAllCommand(Class<?> modelClass) throws ClassNotFoundException {
         if (isJoinAnnotationPresent(modelClass)) {
-            List<Pair<String, String>> columnTypesAndNames = getColumnsTypesAndNames(modelClass);
-            Class<?> joinClass = Class.forName(getReferenceClass(modelClass));
-            List<Pair<String, String>> joinColumnTypesAndNames = getColumnsTypesAndNames(joinClass);
-            Pair<String, String> referenceColumnAndHisMatching = getReferenceColumnAndHisMatching(modelClass);
-            String joinTableName = getJoinTableName(modelClass);
-            return buildSQLSelectCommand(tableName, joinTableName, columnTypesAndNames, joinColumnTypesAndNames, referenceColumnAndHisMatching);
+            return buildSQLSelectAllCommand(modelClass);
         } else {
-            StringBuilder selectCommand = new StringBuilder();
-            selectCommand.append("SELECT * FROM ").append(tableName).append(";");
-            return selectCommand.toString();
+            String tableName = getTableName(modelClass);
+            String selectCommand = "SELECT * FROM " + tableName + ";";
+            return selectCommand;
         }
     }
 
-    private String buildSQLSelectCommand(String tableName, String joinTableName,
-                                         List<Pair<String, String>> columnTypesAndNames,
-                                         List<Pair<String, String>> joinColumnTypesAndNames,
-                                         Pair<String, String> referenceColumnAndHisMatching) {
+    private String getSQLSelectCommand(Class<?> modelClass, int id) throws ClassNotFoundException {
+        if (isJoinAnnotationPresent(modelClass)) {
+            return buildSQLSelectCommand(modelClass, id);
+        } else {
+            String tableName = getTableName(modelClass);
+            String selectCommand = "SELECT * FROM tableName WHERE tableName.id = givenId;";
+            selectCommand = selectCommand.replace("tableName", tableName);
+            selectCommand = selectCommand.replace("givenId", String.valueOf(id));
+            return selectCommand;
+        }
+    }
+
+    private String buildSQLSelectCommand(Class<?> modelClass, int id) throws ClassNotFoundException {
+        String selectAllCommand = buildSQLSelectAllCommand(modelClass);
+        selectAllCommand = removeLastChar(selectAllCommand);
+        String selectSpecificCommand = selectAllCommand + " WHERE tableName.id = givenId;";
+        String tableName = getTableName(modelClass);
+        selectSpecificCommand = selectSpecificCommand.replace("tableName", tableName);
+        selectSpecificCommand = selectSpecificCommand.replace("givenId", String.valueOf(id));
+        return selectSpecificCommand;
+    }
+
+    private String buildSQLSelectAllCommand(Class<?> modelClass) throws ClassNotFoundException {
+        String tableName = getTableName(modelClass);
+        List<Pair<String, String>> columnsTypesAndNames = getColumnsTypesAndNames(modelClass);
+        Class<?> joinClass = Class.forName(getReferenceClass(modelClass));
+        List<Pair<String, String>> joinColumnsTypesAndNames = getColumnsTypesAndNames(joinClass);
+        Pair<String, String> referenceColumnAndHisMatching = getReferenceColumnAndHisMatching(modelClass);
+        String joinTableName = getJoinTableName(modelClass);
         String selectCommand = "SELECT tables.columns FROM tableName " +
                 "JOIN joinTableName " +
-                "ON tableName.referenceColumn = joinTableName.matchingColumn";
-        String columns = columnTypesAndNames.stream().map(pair -> tableName + "." + pair.getValue())
+                "ON tableName.referenceColumn = joinTableName.matchingColumn;";
+        String columns = columnsTypesAndNames.stream().map(pair -> tableName + "." + pair.getValue())
                 .collect(Collectors.joining(" , "));
-        String joinColumns = joinColumnTypesAndNames.stream().map(pair -> joinTableName + "." + pair.getValue())
+        String joinColumns = joinColumnsTypesAndNames.stream().map(pair -> joinTableName + "." + pair.getValue())
                 .collect(Collectors.joining(" , "));
+
         selectCommand = selectCommand.replace("tables.columns", String.join(" , ", columns, joinColumns));
         selectCommand = selectCommand.replace("tableName", tableName);
         selectCommand = selectCommand.replace("joinTableName", joinTableName);
         selectCommand = selectCommand.replace("referenceColumn", referenceColumnAndHisMatching.getKey());
         selectCommand = selectCommand.replace("matchingColumn", referenceColumnAndHisMatching.getValue());
         return selectCommand;
+    }
+
+    private String removeLastChar(String string) {
+        return string.substring(0, string.length() - 1);
     }
 
     private Pair<String, String> getReferenceColumnAndHisMatching(Class<?> modelClass) {
@@ -420,4 +461,5 @@ public class DatabasePersistence {
         }
         return constraints.toString();
     }
+
 }
