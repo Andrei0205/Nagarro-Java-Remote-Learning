@@ -13,9 +13,8 @@ public class DatabaseQuery {
         try (Connection connection = connectionManager.getMyConnection();
              Statement statement = connection.createStatement();
         ) {
-            List<User> userList = new ArrayList<>();
             ResultSet resultSet = statement.executeQuery(selectAllQuery);
-            return constructUsersList(userList, resultSet);
+            return constructUsersList(resultSet);
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
@@ -49,14 +48,14 @@ public class DatabaseQuery {
         ) {
             statement.setBigDecimal(1, target);
             ResultSet resultSet = statement.executeQuery();
-            List<User> userList = new ArrayList<>();
-            return constructUsersList(userList, resultSet);
+            return constructUsersList(resultSet);
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
     }
 
-    private List<User> constructUsersList(List<User> userList, ResultSet resultSet) throws SQLException {
+    private List<User> constructUsersList(ResultSet resultSet) throws SQLException {
+        List<User> userList = new ArrayList<>();
         while (resultSet.next()) {
             int id = resultSet.getInt(1);
             String name = resultSet.getString(2);
